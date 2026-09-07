@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Lega Fantamazzo — L'Asta</title>
+  <meta name="description" content="Il conto alla rovescia è iniziato. L'asta della Lega Fantamazzo sta per cominciare." />
+  <meta name="theme-color" content="#050b08" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Lega Fantamazzo — L'Asta" />
+  <meta property="og:description" content="Il conto alla rovescia è iniziato. L'asta della Lega Fantamazzo sta per cominciare." />
+  <meta property="og:type" content="website" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
+
+  <!-- Font: titolo aggressivo (Anton), countdown da tabellone (Teko), testi (Barlow Condensed) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Teko:wght@400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="assets/css/style.css?v1.1" />
+</head>
+
+<body>
+
+  <!-- Sipario iniziale: schermo nero che si dissolve all'apertura -->
+  <div id="curtain" aria-hidden="true">
+    <div id="intro-ball" aria-hidden="true">
+      <span class="ball-seam ball-seam-1"></span>
+      <span class="ball-seam ball-seam-2"></span>
+      <span class="ball-seam ball-seam-3"></span>
+    </div>
+  </div>
+
+  <!-- Grana cinematografica sopra tutta la scena -->
+  <div class="grain-overlay" aria-hidden="true"></div>
+
+  <main>
+    <section class="hero" id="hero" aria-label="Countdown asta Lega Fantamazzo">
+
+      <div class="scene" id="scene">
+
+        <!-- Layer 1 — cielo notturno / bagliore stadio -->
+        <div class="layer layer-sky" data-depth="0.015" data-step="1"></div>
+
+        <!-- Layer 2 — tribune -->
+        <div class="layer layer-stands" data-depth="0.035" data-step="2"></div>
+
+        <!-- Layer 3 — fasci di luce dei riflettori -->
+        <div class="layer layer-lights" data-depth="0.05" data-step="2">
+          <span class="light-beam beam-1"></span>
+          <span class="light-beam beam-2"></span>
+          <span class="light-beam beam-3"></span>
+          <span class="light-beam beam-4"></span>
+        </div>
+
+        <!-- Layer 4 — foschia -->
+        <div class="layer layer-haze" data-depth="0.02" data-step="3">
+          <span class="haze haze-1"></span>
+          <span class="haze haze-2"></span>
+          <span class="haze haze-3"></span>
+        </div>
+
+        <!-- Layer 5 — campo da calcio in prospettiva -->
+        <div class="layer layer-pitch" data-depth="0.06" data-step="4">
+          <div class="pitch-wrap" aria-hidden="true">
+            <div class="pitch">
+              <div class="pitch-halfway"></div>
+              <div class="pitch-circle"></div>
+              <div class="pitch-spot"></div>
+              <div class="pitch-box pitch-box-far">
+                <div class="pitch-box-six"></div>
+              </div>
+              <div class="pitch-box pitch-box-near">
+                <div class="pitch-box-six"></div>
+              </div>
+              <div class="pitch-goal"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Layer 6 — particelle / polvere illuminata -->
+        <canvas id="particles-canvas" class="layer layer-particles" data-step="4" aria-hidden="true"></canvas>
+
+        <!-- Vignettatura -->
+        <div class="vignette" aria-hidden="true"></div>
+      </div>
+
+      <!-- Layer 7 — contenuto -->
+      <div class="hero-content" id="hero-content" data-depth="0.09">
+
+        <p class="kicker reveal-step" data-step="5">Lega Fantamazzo presenta</p>
+
+        <h1 class="hero-title reveal-step" data-step="5">LEGA FANTAMAZZO</h1>
+
+        <div class="title-divider reveal-step" data-step="5" aria-hidden="true">
+          <span></span><i></i><span></span>
+        </div>
+
+        <p class="hero-subtitle reveal-step" data-step="6">L'ASTA STA PER COMINCIARE</p>
+
+        <div class="countdown reveal-step" data-step="7" role="timer" aria-label="Tempo rimanente all'inizio dell'asta">
+          <div class="countdown-unit">
+            <span class="countdown-value" id="hours" aria-hidden="true">00</span>
+            <span class="countdown-label">Ore</span>
+          </div>
+          <span class="countdown-sep" aria-hidden="true">:</span>
+          <div class="countdown-unit">
+            <span class="countdown-value" id="minutes" aria-hidden="true">00</span>
+            <span class="countdown-label">Minuti</span>
+          </div>
+          <span class="countdown-sep" aria-hidden="true">:</span>
+          <div class="countdown-unit">
+            <span class="countdown-value" id="seconds" aria-hidden="true">00</span>
+            <span class="countdown-label">Secondi</span>
+          </div>
+          <span class="countdown-sep" aria-hidden="true">:</span>
+          <div class="countdown-unit countdown-unit--ms">
+            <span class="countdown-value countdown-value--ms" id="milliseconds" aria-hidden="true">000</span>
+            <span class="countdown-label">ms</span>
+          </div>
+
+          <span class="sr-only" id="countdown-live" aria-live="polite"></span>
+        </div>
+
+        <p class="countdown-status" id="countdown-status" aria-live="polite"></p>
+
+        <p class="cinematic-line reveal-step" data-step="7">
+          Questa sera non si compra una rosa.<br />
+          Questa sera si conquista la gloria.
+        </p>
+
+        <p class="cinematic-line cinematic-line--sub reveal-step" data-step="7">
+          Preparate i crediti. Preparate le strategie. Preparatevi alla battaglia.
+        </p>
+
+        <p class="hero-claim reveal-step" data-step="7">Che il rilancio abbia inizio.</p>
+
+        <button type="button" id="sound-toggle" class="sound-toggle reveal-step" data-step="7" aria-pressed="false">
+          <span class="sound-toggle-icon" aria-hidden="true"></span>
+          <span class="sound-toggle-text">Attiva audio stadio</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="pitch-journey" id="pitch-journey" aria-labelledby="journey-title">
+      <h2 id="journey-title" class="sr-only">Il destino è nelle vostre mani</h2>
+
+      <div class="journey-sticky" id="journey-sticky">
+
+        <div class="journey-backdrop" aria-hidden="true">
+          <span class="journey-haze journey-haze-1"></span>
+          <span class="journey-haze journey-haze-2"></span>
+        </div>
+
+        <div class="journey-scene">
+          <div class="journey-tilt">
+            <svg class="journey-svg" id="journey-svg" viewBox="-500 -500 1000 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <g class="journey-camera" id="journey-camera">
+
+                <!-- Manto erboso a strisce, stesso ritmo cromatico del campo in hero -->
+                <rect class="field-stripe field-stripe-a" x="-320" y="-560" width="64" height="1120" />
+                <rect class="field-stripe field-stripe-b" x="-256" y="-560" width="64" height="1120" />
+                <rect class="field-stripe field-stripe-a" x="-192" y="-560" width="64" height="1120" />
+                <rect class="field-stripe field-stripe-b" x="-128" y="-560" width="64" height="1120" />
+                <rect class="field-stripe field-stripe-a" x="-64" y="-560" width="64" height="1120" />
+                <rect class="field-stripe field-stripe-b" x="0" y="-560" width="64" height="1120" />
+                <rect class="field-stripe field-stripe-a" x="64" y="-560" width="64" height="1120" />
+                <rect class="field-stripe field-stripe-b" x="128" y="-560" width="64" height="1120" />
+                <rect class="field-stripe field-stripe-a" x="192" y="-560" width="64" height="1120" />
+                <rect class="field-stripe field-stripe-b" x="256" y="-560" width="64" height="1120" />
+
+                <!-- Segnaletica del campo -->
+                <rect class="field-line" x="-320" y="-560" width="640" height="1120" fill="none" />
+                <line class="field-line" x1="-320" y1="0" x2="320" y2="0" />
+                <circle class="field-line" cx="0" cy="0" r="90" fill="none" />
+                <circle class="field-dot" cx="0" cy="0" r="4" />
+
+                <rect class="field-line" x="-150" y="380" width="300" height="180" fill="none" />
+                <rect class="field-line" x="-70" y="500" width="140" height="60" fill="none" />
+                <path class="field-line" d="M -66,380 A 90 90 0 0 0 66,380" fill="none" />
+                <circle class="field-dot" cx="0" cy="450" r="4" />
+                <path class="field-goal" d="M -40,560 L -40,586 L 40,586 L 40,560" fill="none" />
+
+                <!-- Il percorso: la linea che la camera segue durante lo scroll -->
+                <path class="journey-glow" id="journey-path-glow" d="M -77.9,-45 A 90 90 0 0 1 68.9,57.9 L 160,180 L 180,300 Q 160,380 90,382 L 40,460 L 0,520 L 0,555" />
+                <path class="journey-line" id="journey-path" d="M -77.9,-45 A 90 90 0 0 1 68.9,57.9 L 160,180 L 180,300 Q 160,380 90,382 L 40,460 L 0,520 L 0,555" />
+              </g>
+            </svg>
+          </div>
+        </div>
+
+        <div class="journey-overlay">
+          <article class="journey-stage" data-stage="strategia">
+            <span class="journey-stage-index" aria-hidden="true">01</span>
+            <h3>Strategia</h3>
+            <p>Ogni credito conta.</p>
+          </article>
+
+          <article class="journey-stage" data-stage="rilanci">
+            <span class="journey-stage-index" aria-hidden="true">02</span>
+            <h3>Rilanci</h3>
+            <p>Un solo errore può cambiare la stagione.</p>
+            <div class="journey-bid-ticker" aria-hidden="true">
+              <span>10</span><span>15</span><span>20</span><span>25</span><span>40</span>
+            </div>
+          </article>
+
+          <article class="journey-stage" data-stage="gloria">
+            <span class="journey-stage-index" aria-hidden="true">03</span>
+            <h3>Gloria</h3>
+            <p>Uno solo salirà sul trono.</p>
+          </article>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="fantasquadre" id="fantasquadre" aria-labelledby="fantasquadre-title">
+      <div class="fantasquadre-backdrop" aria-hidden="true">
+        <span class="fantasquadre-haze fantasquadre-haze-1"></span>
+        <span class="fantasquadre-haze fantasquadre-haze-2"></span>
+      </div>
+
+      <div class="fantasquadre-inner">
+        <p class="fantasquadre-eyebrow fx-reveal">Roster ufficiale</p>
+        <h2 id="fantasquadre-title" class="fantasquadre-title fx-reveal">Le Fantasquadre</h2>
+        <p class="fantasquadre-subtitle fx-reveal">I protagonisti della battaglia.</p>
+        <p class="fantasquadre-lede fx-reveal">Dieci squadre. Dieci strategie. Un solo trono.</p>
+
+        <div class="fantasquadre-grid" id="fantasquadre-grid"></div>
+
+        <a class="fantasquadre-cta fx-reveal" href="https://leghe.fantacalcio.it/lega-fantamazzo/squadre" target="_blank" rel="noopener noreferrer">
+          <span>Vedi le squadre su Fantacalcio</span>
+          <span class="fantasquadre-cta-arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="manifesto" aria-labelledby="manifesto-title">
+      <div class="manifesto-inner">
+        <p class="manifesto-eyebrow">Popoli della Lega</p>
+        <h2 id="manifesto-title" class="manifesto-title">Il proclama della Lega Fantamazzo</h2>
+
+        <p>È stato scritto nei calendari.<br />È stato sussurrato nelle chat.<br />È stato atteso per mesi.</p>
+
+        <p class="manifesto-strong">Questa sera, il destino bussa alla porta.</p>
+
+        <p class="manifesto-shout">L'asta sta per cominciare</p>
+
+        <p>Per una sola notte, il tempo si fermerà.</p>
+
+        <p>
+          I telefoni verranno <strong>silenziati</strong>.<br />
+          Le quotazioni verranno <strong>studiate</strong>.<br />
+          Le strategie verranno <strong>tradite</strong>.<br />
+          Le amicizie verranno <strong>sacrificate</strong> sull'altare del rilancio a caso.
+        </p>
+
+        <p>Da questa sera, ogni credito avrà un peso.</p>
+
+        <p>
+          Ogni rilancio potrà cambiare una stagione.<br />
+          Ogni giocatore acquistato potrà diventare una leggenda.
+        </p>
+
+        <p class="manifesto-strong">O un bidone epocale.</p>
+
+        <p class="manifesto-shout">Uno solo siederà sul trono</p>
+
+        <p>
+          Uno solo potrà guardare gli altri dall'alto della classifica.<br />
+          Uno solo potrà dire:
+        </p>
+
+        <blockquote>«Ve l'avevo detto.»</blockquote>
+
+        <p>Gli altri dovranno invece trovare spiegazioni.</p>
+
+        <blockquote>
+          «Ho avuto sfortuna.»<br />
+          «Mi hanno rubato i giocatori.»<br />
+          «Non potevo sapere che si sarebbe rotto.»<br />
+          «L'anno prossimo faccio una squadra diversa.»
+        </blockquote>
+
+        <p class="manifesto-strong">Bugie. Tutte bugie.</p>
+
+        <p>
+          Perché questa sera non conta <strong>la fortuna</strong>.<br />
+          Non conta <strong>l'amicizia</strong>.<br />
+          Non conta <strong>la pietà</strong>.
+        </p>
+
+        <p>Conta soltanto quanto siete disposti a perdere la dignità per un attaccante da 12 gol.</p>
+
+        <p class="manifesto-fire">
+          🔥 Preparate i crediti.<br />
+          🔥 Preparate le strategie.<br />
+          🔥 Preparate le giustificazioni.
+        </p>
+
+        <p>Perché quando il primo giocatore verrà chiamato...</p>
+
+        <p class="manifesto-strong">Non ci sarà più ritorno.</p>
+
+        <p>Questa non è una semplice asta.</p>
+
+        <p>
+          È una <strong>guerra economica</strong>.<br />
+          È una <strong>partita psicologica</strong>.<br />
+          È un <strong>test di carattere</strong>.<br />
+          È un <strong>processo</strong> in cui ogni fantallenatore sarà giudicato dalle proprie scelte.
+        </p>
+
+        <p class="manifesto-strong">E soprattutto... è la Lega Fantamazzo.</p>
+
+        <p>
+          Che i rilanci siano <strong>folli</strong>.<br />
+          Che i prezzi siano <strong>inspiegabili</strong>.<br />
+          Che i portieri <strong>costino più degli attaccanti</strong>.<br />
+          Che qualcuno <strong>finisca i crediti troppo presto</strong>.
+        </p>
+
+        <p>E che alla fine...</p>
+
+        <p class="manifesto-shout">🏆 Il migliore trionfi 🏆</p>
+
+        <p>Per tutti gli altri resterà una sola cosa:</p>
+
+        <p class="manifesto-final">La vergogna.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Lega Fantamazzo · dal 2012</p>
+  </footer>
+
+  <script src="assets/js/config.js?v1.1"></script>
+  <script src="assets/js/countdown.js?v1.1"></script>
+  <script src="assets/js/intro.js?v1.1"></script>
+  <script src="assets/js/parallax.js?v1.1"></script>
+  <script src="assets/js/journey.js?v1.1"></script>
+  <script src="assets/js/teams.js?v1.1"></script>
+  <script src="assets/js/particles.js?v1.1"></script>
+  <script src="assets/js/audio.js?v1.1"></script>
+  <script src="assets/js/scroll-reveal.js?v1.1"></script>
+  <script src="assets/js/main.js?v1.1"></script>
+</body>
+
+</html>
