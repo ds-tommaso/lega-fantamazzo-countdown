@@ -51,8 +51,10 @@ const EVENT_DATE = "2026-09-07T20:00:00";
 │   │   ├── parallax.js   → parallax cinematografico (mouse + respiro ambientale)
 │   │   ├── journey.js    → camera che segue una linea del campo durante lo scroll (sezione "viaggio")
 │   │   ├── particles.js  → particelle su canvas 2D
+│   │   ├── teams.js      → genera le card delle Fantasquadre e i pulsanti "copia"
 │   │   ├── scroll-reveal.js → reveal a scorrimento della sezione "proclama"
 │   │   ├── page-nav.js   → pulsanti fissi per saltare alla sezione successiva/precedente
+│   │   ├── countdown-fit.js → su mobile, calcola la taglia del countdown per riempire il 100% della larghezza
 │   │   └── main.js       → bootstrap, caricato per ultimo
 │   └── images/
 │       └── favicon.svg
@@ -66,6 +68,14 @@ sezione successiva, uno in alto a destra per tornare a quella precedente (nascos
 prima sezione, l'hero). `assets/js/page-nav.js` deduce la sezione corrente dallo scroll
 (anche quello manuale, non solo i click sui pulsanti) e nasconde il pulsante "successiva"
 anche in fondo alla pagina.
+
+## Copia nome squadra/allenatore
+
+Ogni card in "Le Fantasquadre" ha un'iconcina "copia" accanto al nome della squadra e
+un'altra accanto al fantallenatore (`assets/js/teams.js`, `initCopyButtons`). Al click,
+il testo viene copiato negli appunti (`navigator.clipboard`, con fallback via
+`document.execCommand("copy")` nei contesti non sicuri) e l'icona passa per ~1,6s a una
+spunta verde, per poi tornare all'icona di copia.
 
 ## Un solo campo, dall'hero al footer
 

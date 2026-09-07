@@ -21,6 +21,17 @@ const FANTASQUADRE = [
   { team: "APresto UniFG", manager: "Depalma C." },
 ];
 
+const COPY_ICON_SVG =
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+    '<rect x="9" y="9" width="13" height="13" rx="2"></rect>' +
+    '<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>' +
+  "</svg>";
+
+const CHECK_ICON_SVG =
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
+    '<polyline points="20 6 9 17 4 12"></polyline>' +
+  "</svg>";
+
 /**
  * Fisher-Yates in place. Eseguito una sola volta al caricamento:
  * l'ordine risultante resta fisso per tutta la sessione di lettura.
@@ -31,6 +42,33 @@ function shuffleFisherYates(array) {
     [array[i], array[j]] = [array[j], array[i]];
   }
   return array;
+}
+
+/**
+ * Sfugge il testo per un uso sicuro dentro attributi/markup HTML.
+ */
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+/**
+ * Markup del pulsante "copia": due icone sovrapposte (copia/spunta)
+ * che si alternano via CSS in base alla classe .is-copied, aggiunta
+ * e rimossa da initCopyButtons() dopo il click.
+ */
+function copyButtonHTML(value, label) {
+  const safeValue = escapeHtml(value);
+  const safeLabel = escapeHtml(label);
+  return (
+    '<button type="button" class="copy-btn" data-copy-value="' + safeValue + '" data-copy-label="' + safeLabel + '" aria-label="' + safeLabel + '">' +
+      '<span class="copy-icon icon-copy" aria-hidden="true">' + COPY_ICON_SVG + "</span>" +
+      '<span class="copy-icon icon-check" aria-hidden="true">' + CHECK_ICON_SVG + "</span>" +
+    "</button>"
+  );
 }
 
 function createTeamCard(entry, position) {
@@ -44,12 +82,73 @@ function createTeamCard(entry, position) {
     '<span class="team-card-index" aria-hidden="true">' + index + "</span>" +
     '<div class="team-card-body">' +
       '<p class="team-card-label" aria-hidden="true">Fantasquadra</p>' +
-      '<h3 class="team-card-name">' + entry.team + "</h3>" +
+      '<div class="team-card-row">' +
+        '<h3 class="team-card-name">' + entry.team + "</h3>" +
+        copyButtonHTML(entry.team, "Copia nome squadra") +
+      "</div>" +
       '<span class="team-card-divider" aria-hidden="true"></span>' +
-      '<p class="team-card-manager">' + entry.manager + "</p>" +
+      '<div class="team-card-row">' +
+        '<p class="team-card-manager">' + entry.manager + "</p>" +
+        copyButtonHTML(entry.manager, "Copia nome allenatore") +
+      "</div>" +
     "</div>";
 
   return card;
+}
+
+/**
+ * Copia il testo negli appunti (Clipboard API con fallback
+ * execCommand per contesti non sicuri/browser meno recenti).
+ */
+function copyTextToClipboard(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    return navigator.clipboard.writeText(text);
+  }
+
+  return new Promise((resolve, reject) => {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "fixed";
+    textarea.style.left = "-9999px";
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand("copy");
+      resolve();
+    } catch (err) {
+      reject(err);
+    } finally {
+      document.body.removeChild(textarea);
+    }
+  });
+}
+
+/**
+ * Un solo listener delegato sul grid: al click su un pulsante
+ * "copia", copia il valore associato e mostra brevemente la spunta
+ * verde al posto dell'icona, per poi tornare alla copia.
+ */
+function initCopyButtons(grid) {
+  grid.addEventListener("click", (event) => {
+    const button = event.target.closest(".copy-btn");
+    if (!button || !grid.contains(button)) return;
+
+    copyTextToClipboard(button.dataset.copyValue)
+      .then(() => flashCopied(button))
+      .catch(() => {});
+  });
+}
+
+function flashCopied(button) {
+  button.classList.add("is-copied");
+  button.setAttribute("aria-label", "Copiato!");
+
+  window.clearTimeout(button._copyResetTimer);
+  button._copyResetTimer = window.setTimeout(() => {
+    button.classList.remove("is-copied");
+    button.setAttribute("aria-label", button.dataset.copyLabel);
+  }, 1600);
 }
 
 /**
@@ -69,6 +168,7 @@ function initFantasquadre() {
   });
 
   grid.appendChild(fragment);
+  initCopyButtons(grid);
 
   const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const revealTargets = document.querySelectorAll(".fantasquadre .fx-reveal, .fantasquadre .fx-card");

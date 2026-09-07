@@ -1304,6 +1304,74 @@ body.is-flash::after {
   color: rgba(244, 247, 244, 0.35);
 }
 
+.team-card-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.team-card-row .team-card-name,
+.team-card-row .team-card-manager {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* --- Pulsante "copia" accanto a nome squadra/allenatore --- */
+.copy-btn {
+  flex: 0 0 auto;
+  position: relative;
+  width: 1.1rem;
+  height: 1.1rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: rgba(244, 247, 244, 0.4);
+  cursor: pointer;
+  transition: color 0.25s ease, transform 0.15s ease;
+}
+
+.copy-btn:hover,
+.copy-btn:focus-visible {
+  color: rgba(244, 247, 244, 0.85);
+}
+
+.copy-btn:active {
+  transform: scale(0.88);
+}
+
+.copy-btn.is-copied {
+  color: #3ddc84;
+}
+
+.copy-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.copy-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.copy-btn .icon-check {
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+.copy-btn.is-copied .icon-copy {
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+.copy-btn.is-copied .icon-check {
+  opacity: 1;
+  transform: scale(1);
+}
+
 .team-card-name {
   margin: 0;
   font-family: var(--font-display);
@@ -1898,7 +1966,8 @@ body.is-live .final-shot-line--live {
   .team-card,
   .team-card-name,
   .team-card-manager,
-  .page-nav-btn {
+  .page-nav-btn,
+  .copy-icon {
     animation: none !important;
     transition: none !important;
   }
