@@ -40,14 +40,15 @@ function formatUnit(value, length = 2) {
 }
 
 /**
- * Scompone una durata in ore/minuti/secondi (niente millisecondi:
- * le ore NON vengono ridotte modulo 24, possono superare 23).
+ * Scompone una durata in ore/minuti/secondi/millisecondi.
+ * Le ore NON vengono ridotte modulo 24, possono superare 23.
  */
 function msToUnits(ms) {
   const hours = Math.floor(ms / 3600000);
   const minutes = Math.floor((ms % 3600000) / 60000);
   const seconds = Math.floor((ms % 60000) / 1000);
-  return { hours, minutes, seconds };
+  const milliseconds = Math.floor(ms % 1000);
+  return { hours, minutes, seconds, milliseconds };
 }
 
 /**
@@ -95,11 +96,18 @@ function updateCountdown() {
     return;
   }
 
-  const { hours, minutes, seconds } = msToUnits(ms);
+  const { hours, minutes, seconds, milliseconds } = msToUnits(ms);
 
   setUnitText(dom.hours, "hours", formatUnit(hours));
   setUnitText(dom.minutes, "minutes", formatUnit(minutes));
   setUnitText(dom.seconds, "seconds", formatUnit(seconds));
+
+  // I millisecondi cambiano ad ogni frame: niente micro-animazione
+  // di cambio cifra, si aggiorna solo il testo. Il timer li mostra
+  // soltanto prima dell'inizio (CSS li nasconde quando è live).
+  if (phase === "before") {
+    dom.milliseconds.textContent = formatUnit(milliseconds, 3);
+  }
 
   announceForScreenReaders(phase, hours, minutes);
 

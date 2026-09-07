@@ -52,6 +52,7 @@ function cacheDom() {
   dom.hours = document.getElementById("hours");
   dom.minutes = document.getElementById("minutes");
   dom.seconds = document.getElementById("seconds");
+  dom.milliseconds = document.getElementById("milliseconds");
   dom.sign = document.getElementById("countdown-sign");
   dom.phase = document.getElementById("auction-phase");
   dom.statusWrap = document.getElementById("auction-status");
