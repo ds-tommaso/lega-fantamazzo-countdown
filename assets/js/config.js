@@ -16,7 +16,7 @@
 // Formato: "AAAA-MM-GGTHH:MM:SS" (senza "Z": viene interpretata
 // come ora locale del browser di chi visita la pagina).
 // ========================================
-const EVENT_DATE = "2026-09-07T20:20:00";
+const EVENT_DATE = "2026-09-07T20:45:00";
 
 // Per quante ore dopo l'inizio restare visibile il countdown
 // (stato "L'asta è iniziata" col segno verde). Dopo, il blocco sparisce.

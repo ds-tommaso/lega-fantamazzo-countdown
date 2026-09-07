@@ -19,7 +19,7 @@ L'unica cosa da modificare è la costante `EVENT_DATE` in cima a [`assets/js/con
 // CONFIGURAZIONE ASTA
 // Modifica SOLO questa data e ora.
 // ========================================
-const EVENT_DATE = "2026-09-07T20:00:00";
+const EVENT_DATE = "2026-09-07T20:45:00";
 ```
 
 - Il formato è `AAAA-MM-GGTHH:MM:SS`.
