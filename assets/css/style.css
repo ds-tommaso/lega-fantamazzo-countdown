@@ -622,17 +622,6 @@ body.curtain-open #curtain {
   margin-bottom: 2.2rem;
 }
 
-/* Di default i due gruppi (ore/minuti/secondi e millisecondi) non
-   sono "wrapper" visivi: i loro figli si comportano come se fossero
-   figli diretti di .countdown, sulla stessa riga (nessun cambiamento
-   rispetto a prima). Solo su mobile diventano due righe separate
-   (vedi media query in fondo al file), per lasciare ore/minuti/secondi
-   enormi su una riga e i millisecondi più piccoli su quella sotto. */
-.countdown-main,
-.countdown-ms {
-  display: contents;
-}
-
 .countdown-unit {
   display: flex;
   flex-direction: column;
@@ -1836,24 +1825,13 @@ body.is-live .final-shot-line--live {
     display: none;
   }
 
-  /* Ore/minuti/secondi (+ segno) enormi su un'unica riga; i
-     millisecondi (legati solo al timer negativo) vanno su una riga
-     a parte sotto, più piccola. I due gruppi diventano vere righe
-     flex (non più "trasparenti" come su desktop, vedi sezione 5),
-     impilate verticalmente da .countdown. */
+  /* Il timer resta SEMPRE su un'unica riga, anche su mobile: niente
+     wrap, le cifre sono le più grandi possibili senza mai andare in
+     overflow orizzontale (misurato, non solo stimato via vw). */
   .countdown {
-    flex-direction: column;
-    align-items: center;
-    row-gap: 0.15rem;
+    flex-wrap: nowrap;
+    gap: clamp(0.1rem, 1.6vw, 0.4rem);
     margin-bottom: 1.2rem;
-  }
-
-  .countdown-main,
-  .countdown-ms {
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    column-gap: clamp(0.1rem, 1.8vw, 0.45rem);
   }
 
   .countdown-unit {
@@ -1861,24 +1839,24 @@ body.is-live .final-shot-line--live {
   }
 
   .countdown--hero .countdown-value {
-    font-size: clamp(2.8rem, 19vw, 5.2rem);
+    font-size: clamp(2.4rem, 13vw, 4.3rem);
   }
 
   .countdown-sign {
-    font-size: clamp(2.8rem, 19vw, 5.2rem);
+    font-size: clamp(2.4rem, 13vw, 4.3rem);
   }
 
   .countdown--hero .countdown-sep {
-    font-size: clamp(2.2rem, 14.5vw, 4rem);
-    padding-bottom: clamp(0.35rem, 1.7vw, 0.75rem);
+    font-size: clamp(1.8rem, 9.7vw, 3.2rem);
+    padding-bottom: clamp(0.3rem, 1.4vw, 0.6rem);
   }
 
   .countdown-sep--ms {
-    font-size: clamp(1rem, 5vw, 1.4rem);
+    font-size: clamp(1.1rem, 5.8vw, 1.9rem);
   }
 
   .countdown-unit--ms .countdown-value {
-    font-size: clamp(0.85rem, 4vw, 1.15rem);
+    font-size: clamp(0.95rem, 5vw, 1.7rem);
   }
 
   .countdown-label {
