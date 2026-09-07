@@ -18,6 +18,10 @@
 // ========================================
 const EVENT_DATE = "2026-09-07T20:00:00";
 
+// Per quante ore dopo l'inizio restare visibile il countdown
+// (stato "L'asta è iniziata" col segno verde). Dopo, il blocco sparisce.
+const AUCTION_VISIBLE_AFTER_START_HOURS = 6;
+
 // Altre impostazioni regolabili
 const PARTICLE_COUNT_DESKTOP = 46;
 const PARTICLE_COUNT_MOBILE = 18;
@@ -31,8 +35,10 @@ const INTRO_CURTAIN_OPEN_AT = 950; // ms: apertura sipario dopo il pallone (sost
 // Stato condiviso e riferimenti DOM
 // ------------------------------------------------------------
 const targetTime = new Date(EVENT_DATE).getTime();
+const AUCTION_VISIBLE_AFTER_START_MS = AUCTION_VISIBLE_AFTER_START_HOURS * 3600000;
 
 let eventStarted = false;
+let eventExpired = false;
 let boostParticlesFn = () => { };
 
 const dom = {};
@@ -47,6 +53,9 @@ function cacheDom() {
   dom.minutes = document.getElementById("minutes");
   dom.seconds = document.getElementById("seconds");
   dom.milliseconds = document.getElementById("milliseconds");
-  dom.status = document.getElementById("countdown-status");
+  dom.sign = document.getElementById("countdown-sign");
+  dom.phase = document.getElementById("auction-phase");
+  dom.statusWrap = document.getElementById("auction-status");
+  dom.countdownBlock = document.getElementById("countdown-block");
   dom.liveRegion = document.getElementById("countdown-live");
 }

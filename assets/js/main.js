@@ -22,6 +22,7 @@ function initPage() {
   initParticles();
   initSoundToggle();
   initScrollReveal();
+  initPageNav();
   startCountdown();
 }
 

@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Teko:wght@400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="assets/css/style.css?v1.3" />
+  <link rel="stylesheet" href="assets/css/style.css?v1.5" />
 </head>
 
 <body>
@@ -100,7 +100,34 @@
           <span></span><i></i><span></span>
         </div>
 
-        <p class="hero-subtitle reveal-step" data-step="6">L'ASTA STA PER COMINCIARE</p>
+        <div class="auction-status reveal-step" id="auction-status" data-step="6">
+          <p class="hero-subtitle" id="auction-phase">L'ASTA STA PER COMINCIARE</p>
+
+          <div class="countdown countdown--hero is-before" id="countdown-block" role="timer" aria-label="Stato e tempo dell'asta">
+            <span class="countdown-sign" id="countdown-sign" aria-hidden="true">&minus;</span>
+            <div class="countdown-unit">
+              <span class="countdown-value" id="hours" aria-hidden="true">00</span>
+              <span class="countdown-label">Ore</span>
+            </div>
+            <span class="countdown-sep" aria-hidden="true">:</span>
+            <div class="countdown-unit">
+              <span class="countdown-value" id="minutes" aria-hidden="true">00</span>
+              <span class="countdown-label">Minuti</span>
+            </div>
+            <span class="countdown-sep" aria-hidden="true">:</span>
+            <div class="countdown-unit">
+              <span class="countdown-value" id="seconds" aria-hidden="true">00</span>
+              <span class="countdown-label">Secondi</span>
+            </div>
+            <span class="countdown-sep countdown-sep--ms" aria-hidden="true">:</span>
+            <div class="countdown-unit countdown-unit--ms">
+              <span class="countdown-value countdown-value--ms" id="milliseconds" aria-hidden="true">000</span>
+              <span class="countdown-label">ms</span>
+            </div>
+
+            <span class="sr-only" id="countdown-live" aria-live="polite"></span>
+          </div>
+        </div>
 
         <p class="cinematic-line reveal-step" data-step="7">
           Questa sera non si compra una rosa.<br />
@@ -117,57 +144,6 @@
           <span class="sound-toggle-icon" aria-hidden="true"></span>
           <span class="sound-toggle-text">Attiva audio stadio</span>
         </button>
-      </div>
-    </section>
-
-    <section class="scoreboard" id="scoreboard" aria-label="Countdown asta Lega Fantamazzo">
-      <div class="scoreboard-field" aria-hidden="true">
-        <div class="pitch-wrap">
-          <div class="pitch">
-            <div class="pitch-halfway"></div>
-            <div class="pitch-circle"></div>
-            <div class="pitch-spot"></div>
-            <div class="pitch-box pitch-box-far">
-              <div class="pitch-box-six"></div>
-            </div>
-            <div class="pitch-box pitch-box-near">
-              <div class="pitch-box-six"></div>
-            </div>
-            <div class="pitch-goal"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="vignette" aria-hidden="true"></div>
-
-      <div class="scoreboard-inner">
-        <p class="kicker reveal-step" data-step="7">Il countdown</p>
-
-        <div class="countdown reveal-step" data-step="7" role="timer" aria-label="Tempo rimanente all'inizio dell'asta">
-          <div class="countdown-unit">
-            <span class="countdown-value" id="hours" aria-hidden="true">00</span>
-            <span class="countdown-label">Ore</span>
-          </div>
-          <span class="countdown-sep" aria-hidden="true">:</span>
-          <div class="countdown-unit">
-            <span class="countdown-value" id="minutes" aria-hidden="true">00</span>
-            <span class="countdown-label">Minuti</span>
-          </div>
-          <span class="countdown-sep" aria-hidden="true">:</span>
-          <div class="countdown-unit">
-            <span class="countdown-value" id="seconds" aria-hidden="true">00</span>
-            <span class="countdown-label">Secondi</span>
-          </div>
-          <span class="countdown-sep" aria-hidden="true">:</span>
-          <div class="countdown-unit countdown-unit--ms">
-            <span class="countdown-value countdown-value--ms" id="milliseconds" aria-hidden="true">000</span>
-            <span class="countdown-label">ms</span>
-          </div>
-
-          <span class="sr-only" id="countdown-live" aria-live="polite"></span>
-        </div>
-
-        <p class="countdown-status" id="countdown-status" aria-live="polite"></p>
       </div>
     </section>
 
@@ -265,7 +241,7 @@
       </div>
     </section>
 
-    <section class="manifesto" aria-labelledby="manifesto-title">
+    <section class="manifesto" id="manifesto" aria-labelledby="manifesto-title">
       <div class="manifesto-inner">
         <p class="manifesto-eyebrow">Popoli della Lega</p>
         <h2 id="manifesto-title" class="manifesto-title">Il proclama della Lega Fantamazzo</h2>
@@ -360,7 +336,7 @@
       </div>
     </section>
 
-    <section class="final-shot" aria-live="polite">
+    <section class="final-shot" id="final-shot" aria-live="polite">
       <p class="final-shot-pre">Fischio d'inizio.</p>
       <h2 class="final-shot-line final-shot-line--waiting">Il destino vi aspetta</h2>
       <h2 class="final-shot-line final-shot-line--live">L'asta è iniziata</h2>
@@ -371,16 +347,26 @@
     <p>Lega Fantamazzo · dal 2012</p>
   </footer>
 
-  <script src="assets/js/config.js?v1.3"></script>
-  <script src="assets/js/countdown.js?v1.3"></script>
-  <script src="assets/js/intro.js?v1.3"></script>
-  <script src="assets/js/parallax.js?v1.3"></script>
-  <script src="assets/js/journey.js?v1.3"></script>
-  <script src="assets/js/teams.js?v1.3"></script>
-  <script src="assets/js/particles.js?v1.3"></script>
-  <script src="assets/js/audio.js?v1.3"></script>
-  <script src="assets/js/scroll-reveal.js?v1.3"></script>
-  <script src="assets/js/main.js?v1.3"></script>
+  <nav class="page-nav" aria-label="Navigazione tra le sezioni">
+    <button type="button" id="nav-prev" class="page-nav-btn page-nav-btn--prev is-hidden" aria-label="Vai alla sezione precedente">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.8 4.6 12.2l1.6 1.6L11 9.1v10.1h2V9.1l4.8 4.7 1.6-1.6z"/></svg>
+    </button>
+    <button type="button" id="nav-next" class="page-nav-btn page-nav-btn--next" aria-label="Vai alla sezione successiva">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19.2 19.4 11.8 17.8 10.2 13 14.9V4.8H11V14.9L6.2 10.2 4.6 11.8Z"/></svg>
+    </button>
+  </nav>
+
+  <script src="assets/js/config.js?v1.5"></script>
+  <script src="assets/js/countdown.js?v1.5"></script>
+  <script src="assets/js/intro.js?v1.5"></script>
+  <script src="assets/js/parallax.js?v1.5"></script>
+  <script src="assets/js/journey.js?v1.5"></script>
+  <script src="assets/js/teams.js?v1.5"></script>
+  <script src="assets/js/particles.js?v1.5"></script>
+  <script src="assets/js/audio.js?v1.5"></script>
+  <script src="assets/js/scroll-reveal.js?v1.5"></script>
+  <script src="assets/js/page-nav.js?v1.5"></script>
+  <script src="assets/js/main.js?v1.5"></script>
 </body>
 
 </html>

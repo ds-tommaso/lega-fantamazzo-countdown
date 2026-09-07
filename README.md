@@ -2,7 +2,7 @@
 
 Landing page cinematografica per il conto alla rovescia dell'asta della **Lega Fantamazzo**.
 Un'unica pagina statica (HTML/CSS/JS, senza framework né backend) che simula l'ingresso in
-uno stadio notturno: luci, foschia, campo in prospettiva e un countdown ore:minuti:secondi:millisecondi
+uno stadio notturno: luci, foschia, campo in prospettiva e un countdown ore:minuti:secondi
 sempre sincronizzato con l'orario reale.
 
 ## Anteprima locale
@@ -25,42 +25,48 @@ const EVENT_DATE = "2026-09-07T20:00:00";
 - Il formato è `AAAA-MM-GGTHH:MM:SS`.
 - **Non aggiungere `Z`**: la data viene interpretata come ora locale del browser di chi
   visita la pagina, non come UTC.
-- Il countdown mostra ore/minuti/secondi/millisecondi (niente giorni); le ore possono
-  superare 23 se manca più di un giorno all'evento.
-- Quando il tempo restante arriva a zero, il countdown si ferma su `00:00:00:000` e la
-  pagina passa automaticamente allo stato "L'asta è iniziata".
+- Il countdown mostra ore/minuti/secondi (niente giorni, niente millisecondi); le ore
+  possono superare 23 se manca più di un giorno all'evento.
+- Il blocco countdown vive nell'hero, subito sotto "L'ASTA STA PER COMINCIARE", e cambia
+  stato automaticamente in base alla data (nessuna azione manuale richiesta):
+  - **prima dell'inizio**: "L'ASTA STA PER COMINCIARE" e timer negativo, segno e cifre
+    in rosso;
+  - **da 0 a `AUCTION_VISIBLE_AFTER_START_HOURS` ore dopo l'inizio** (6 ore di default,
+    modificabile in `config.js`): "L'ASTA È INIZIATA" e timer positivo che conta il tempo
+    trascorso, segno e cifre in verde;
+  - **oltre quella soglia**: l'intero blocco (etichetta + timer) sparisce dall'hero.
 
 ## Struttura del progetto
 
 ```
 /
-├── index.html            → markup della pagina (hero, scoreboard, viaggio, squadre, proclama, finale)
+├── index.html            → markup della pagina (hero, viaggio, squadre, proclama, finale)
 ├── assets/
 │   ├── css/
 │   │   └── style.css     → tutto lo stile (stadio, countdown, viaggio sul campo, responsive, riduzione movimento)
 │   ├── js/
 │   │   ├── config.js     → EVENT_DATE e costanti regolabili, stato condiviso, cache DOM
-│   │   ├── countdown.js  → calcolo tempo restante, formattazione, loop del countdown
+│   │   ├── countdown.js  → calcolo stato/tempo, formattazione, loop del countdown
 │   │   ├── intro.js      → pallone cinematografico + apertura a fasi (sipario, luci, campo, countdown)
 │   │   ├── parallax.js   → parallax cinematografico (mouse + respiro ambientale)
 │   │   ├── journey.js    → camera che segue una linea del campo durante lo scroll (sezione "viaggio")
 │   │   ├── particles.js  → particelle su canvas 2D
 │   │   ├── audio.js      → rumore di stadio opzionale (Web Audio API, solo su click)
 │   │   ├── scroll-reveal.js → reveal a scorrimento della sezione "proclama"
+│   │   ├── page-nav.js   → pulsanti fissi per saltare alla sezione successiva/precedente
 │   │   └── main.js       → bootstrap, caricato per ultimo
 │   └── images/
 │       └── favicon.svg
 └── README.md
 ```
 
-## Il countdown come scoreboard gigante
+## Navigazione tra le sezioni
 
-Il countdown vive nella sua sezione dedicata `#scoreboard` (subito dopo l'hero),
-non più incastrato tra titolo e claim: una scena `min-height: 100svh` a sé stante,
-con lo stesso campo dell'hero (`.pitch-wrap`/`.pitch`, riusato e affievolito) visibile
-sotto ai numeri. Le cifre usano `clamp()` con `vw` senza un `max-width` fisso, quindi
-su un monitor grande o una TV diventano davvero enormi, mentre su mobile restano
-ancorate al valore minimo del `clamp()` (nessun overflow orizzontale).
+Due pulsanti fissi, presenti su tutta la pagina: uno in basso a destra per andare alla
+sezione successiva, uno in alto a destra per tornare a quella precedente (nascosto sulla
+prima sezione, l'hero). `assets/js/page-nav.js` deduce la sezione corrente dallo scroll
+(anche quello manuale, non solo i click sui pulsanti) e nasconde il pulsante "successiva"
+anche in fondo alla pagina.
 
 ## Un solo campo, dall'hero al footer
 

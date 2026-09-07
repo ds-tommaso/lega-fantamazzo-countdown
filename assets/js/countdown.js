@@ -4,23 +4,32 @@
    LEGA FANTAMAZZO — L'ASTA
    countdown.js — calcolo, formattazione e rendering del countdown.
    Dipende dalle costanti/variabili definite in config.js.
+
+   Tre stati, decisi solo confrontando Date.now() con targetTime:
+   - "before"  → l'asta non è ancora iniziata: timer negativo (segno rosso)
+   - "live"    → l'asta è iniziata da meno di AUCTION_VISIBLE_AFTER_START_MS:
+                 timer positivo (segno verde) che conta il tempo trascorso
+   - "expired" → oltre quella soglia: il blocco countdown sparisce del tutto
    ============================================================ */
 
 /**
- * Calcola il tempo restante rispetto al timestamp target.
+ * Determina lo stato dell'asta rispetto a targetTime.
  * La fonte di verità è sempre Date.now(): nessun contatore
  * viene decrementato manualmente, quindi non c'è drift.
- * Le ore NON vengono ridotte modulo 24: possono superare 23.
  */
-function calculateRemainingTime() {
-  const remainingMs = Math.max(0, targetTime - Date.now());
+function calculateAuctionState() {
+  const diff = targetTime - Date.now();
 
-  const hours = Math.floor(remainingMs / 3600000);
-  const minutes = Math.floor((remainingMs % 3600000) / 60000);
-  const seconds = Math.floor((remainingMs % 60000) / 1000);
-  const milliseconds = Math.floor(remainingMs % 1000);
+  if (diff > 0) {
+    return { phase: "before", ms: diff };
+  }
 
-  return { remainingMs, hours, minutes, seconds, milliseconds };
+  const elapsedMs = -diff;
+  if (elapsedMs >= AUCTION_VISIBLE_AFTER_START_MS) {
+    return { phase: "expired", ms: elapsedMs };
+  }
+
+  return { phase: "live", ms: elapsedMs };
 }
 
 /**
@@ -28,6 +37,18 @@ function calculateRemainingTime() {
  */
 function formatUnit(value, length = 2) {
   return String(value).padStart(length, "0");
+}
+
+/**
+ * Scompone una durata in ore/minuti/secondi/millisecondi.
+ * Le ore NON vengono ridotte modulo 24, possono superare 23.
+ */
+function msToUnits(ms) {
+  const hours = Math.floor(ms / 3600000);
+  const minutes = Math.floor((ms % 3600000) / 60000);
+  const seconds = Math.floor((ms % 60000) / 1000);
+  const milliseconds = Math.floor(ms % 1000);
+  return { hours, minutes, seconds, milliseconds };
 }
 
 /**
@@ -46,12 +67,14 @@ function setUnitText(el, key, text) {
  * Aggiorna la regione aria-live una sola volta al minuto,
  * per non "spammare" gli screen reader ad ogni secondo.
  */
-function announceForScreenReaders(hours, minutes, seconds) {
-  const minuteKey = hours * 60 + minutes;
+function announceForScreenReaders(phase, hours, minutes) {
+  const minuteKey = `${phase}-${hours * 60 + minutes}`;
   if (minuteKey === lastAnnouncedMinute) return;
   lastAnnouncedMinute = minuteKey;
   dom.liveRegion.textContent =
-    `Mancano ${hours} ore, ${minutes} minuti e ${seconds} secondi all'inizio dell'asta.`;
+    phase === "before"
+      ? `Mancano ${hours} ore e ${minutes} minuti all'inizio dell'asta.`
+      : `L'asta è iniziata da ${hours} ore e ${minutes} minuti.`;
 }
 
 /**
@@ -60,21 +83,33 @@ function announceForScreenReaders(hours, minutes, seconds) {
  * del browser restando comunque sincronizzato con l'orario reale.
  */
 function updateCountdown() {
-  if (eventStarted) return;
+  if (eventExpired) return;
 
-  const { remainingMs, hours, minutes, seconds, milliseconds } = calculateRemainingTime();
+  const { phase, ms } = calculateAuctionState();
+
+  if (phase !== "before" && !eventStarted) {
+    handleEventStarted();
+  }
+
+  if (phase === "expired") {
+    handleEventExpired();
+    return;
+  }
+
+  const { hours, minutes, seconds, milliseconds } = msToUnits(ms);
 
   setUnitText(dom.hours, "hours", formatUnit(hours));
   setUnitText(dom.minutes, "minutes", formatUnit(minutes));
   setUnitText(dom.seconds, "seconds", formatUnit(seconds));
-  dom.milliseconds.textContent = formatUnit(milliseconds, 3);
 
-  announceForScreenReaders(hours, minutes, seconds);
-
-  if (remainingMs <= 0) {
-    handleEventStarted();
-    return;
+  // I millisecondi cambiano ad ogni frame: niente micro-animazione
+  // di cambio cifra, si aggiorna solo il testo. Il timer li mostra
+  // soltanto prima dell'inizio (CSS li nasconde quando è live).
+  if (phase === "before") {
+    dom.milliseconds.textContent = formatUnit(milliseconds, 3);
   }
+
+  announceForScreenReaders(phase, hours, minutes);
 
   requestAnimationFrame(updateCountdown);
 }
@@ -87,26 +122,36 @@ function startCountdown() {
 }
 
 /**
- * Gestisce il passaggio allo stato "asta iniziata": ferma il
- * countdown su 00:00:00:000, mostra il messaggio e innesca una
- * breve transizione cinematografica (flash + boost luci/particelle).
+ * Gestisce il passaggio allo stato "asta iniziata": testo, segno
+ * e colore passano da "prima" (rosso, negativo) a "live" (verde,
+ * positivo) e innesca una breve transizione cinematografica
+ * (flash + boost luci/particelle).
  */
 function handleEventStarted() {
   if (eventStarted) return;
   eventStarted = true;
 
-  dom.hours.textContent = "00";
-  dom.minutes.textContent = "00";
-  dom.seconds.textContent = "00";
-  dom.milliseconds.textContent = "000";
-
   document.body.classList.add("is-live");
   document.body.classList.add("is-flash");
   window.setTimeout(() => document.body.classList.remove("is-flash"), 700);
 
-  dom.status.textContent = "L'asta è iniziata";
-  dom.status.classList.add("is-visible");
-  dom.liveRegion.textContent = "L'asta è iniziata.";
+  dom.phase.textContent = "L'ASTA È INIZIATA";
+  dom.countdownBlock.classList.remove("is-before");
+  dom.countdownBlock.classList.add("is-live");
+  dom.sign.textContent = "+";
 
   boostParticlesFn();
+}
+
+/**
+ * Oltre AUCTION_VISIBLE_AFTER_START_MS dall'inizio, il blocco
+ * countdown (etichetta + timer) sparisce del tutto: ferma anche
+ * il loop, non c'è più nulla da aggiornare.
+ */
+function handleEventExpired() {
+  if (eventExpired) return;
+  eventExpired = true;
+
+  dom.statusWrap.classList.add("is-expired");
+  dom.liveRegion.textContent = "";
 }
