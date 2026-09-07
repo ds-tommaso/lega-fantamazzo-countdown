@@ -77,6 +77,14 @@ function announceForScreenReaders(phase, hours, minutes) {
       : `L'asta è iniziata da ${hours} ore e ${minutes} minuti.`;
 }
 
+// Le ore non hanno lo zero iniziale (5, non 05): il numero di cifre
+// non è più fisso come per minuti/secondi. initCountdownFit() misura
+// la riga usando il placeholder statico dell'HTML, che potrebbe non
+// avere lo stesso numero di cifre del valore reale: al primo tick
+// con i valori veri si ricalcola una volta per correggere eventuali
+// scarti (evita overflow se il placeholder aveva meno cifre).
+let hasFittedRealValues = false;
+
 /**
  * Callback eseguita ad ogni frame tramite requestAnimationFrame.
  * Non usa mai setInterval: il rendering segue il refresh rate
@@ -98,7 +106,7 @@ function updateCountdown() {
 
   const { hours, minutes, seconds, milliseconds } = msToUnits(ms);
 
-  setUnitText(dom.hours, "hours", formatUnit(hours));
+  setUnitText(dom.hours, "hours", String(hours));
   setUnitText(dom.minutes, "minutes", formatUnit(minutes));
   setUnitText(dom.seconds, "seconds", formatUnit(seconds));
 
@@ -107,6 +115,11 @@ function updateCountdown() {
   // soltanto prima dell'inizio (CSS li nasconde quando è live).
   if (phase === "before") {
     dom.milliseconds.textContent = formatUnit(milliseconds, 3);
+  }
+
+  if (!hasFittedRealValues) {
+    hasFittedRealValues = true;
+    fitCountdownRow();
   }
 
   announceForScreenReaders(phase, hours, minutes);

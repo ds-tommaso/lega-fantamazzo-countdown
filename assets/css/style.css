@@ -594,6 +594,13 @@ body.curtain-open #curtain {
 }
 
 .auction-status {
+  /* .hero-content è un flex a colonna con align-items:center: senza
+     stretch, questo elemento (flex item) si restringerebbe al
+     contenuto invece di occupare la larghezza disponibile, rendendo
+     inattendibile qualunque misura fatta su di lui in JS (vedi
+     assets/js/countdown-fit.js) e vanificando il bordo sx/dx dato
+     dal padding di .hero-content. */
+  align-self: stretch;
   margin: 0 0 2.4rem;
 }
 
