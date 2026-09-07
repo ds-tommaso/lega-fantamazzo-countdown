@@ -85,10 +85,28 @@ function announceForScreenReaders(phase, hours, minutes) {
 // scarti (evita overflow se il placeholder aveva meno cifre).
 let hasFittedRealValues = false;
 
+// Il countdown resta sempre corretto (calculateAuctionState legge
+// targetTime - Date.now() ad ogni chiamata, nessun decremento
+// manuale). Ma il *rendering* a 60fps ha senso solo mentre il
+// blocco countdown è davvero in viewport e la scheda è in primo
+// piano: altrove basta un aggiornamento al secondo, i millisecondi
+// non sono comunque percepibili se non si guarda il timer.
+let countdownVisible = true;
+let countdownPageVisible = true;
+
+function scheduleCountdown() {
+  if (countdownVisible && countdownPageVisible) {
+    requestAnimationFrame(updateCountdown);
+  } else {
+    window.setTimeout(updateCountdown, 1000);
+  }
+}
+
 /**
- * Callback eseguita ad ogni frame tramite requestAnimationFrame.
- * Non usa mai setInterval: il rendering segue il refresh rate
- * del browser restando comunque sincronizzato con l'orario reale.
+ * Callback eseguita ad ogni frame tramite requestAnimationFrame
+ * (o, quando il timer non è visibile, una volta al secondo). Non
+ * usa mai setInterval per il calcolo: il valore resta sempre
+ * sincronizzato con l'orario reale.
  */
 function updateCountdown() {
   if (eventExpired) return;
@@ -124,14 +142,23 @@ function updateCountdown() {
 
   announceForScreenReaders(phase, hours, minutes);
 
-  requestAnimationFrame(updateCountdown);
+  scheduleCountdown();
 }
 
 /**
- * Avvia il loop del countdown.
+ * Avvia il loop del countdown, agganciato alla visibilità
+ * dell'hero e della scheda (vedi perf.js).
  */
 function startCountdown() {
-  requestAnimationFrame(updateCountdown);
+  onHeroVisibilityChange((visible) => {
+    countdownVisible = visible;
+  });
+
+  onPageVisibilityChange((visible) => {
+    countdownPageVisible = visible;
+  });
+
+  scheduleCountdown();
 }
 
 /**

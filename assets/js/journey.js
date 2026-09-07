@@ -128,20 +128,28 @@ function initJourneyCamera(section, sticky, cameraGroup, pathEl, stages) {
   let activeStage = null;
   const swayPhase = Math.random() * Math.PI * 2;
   let rotateXReach = window.innerWidth < MOBILE_BREAKPOINT ? 0.4 : 1;
+  let running = false;
+  let sectionVisible = true;
+  let pageVisible = true;
 
-  window.addEventListener(
-    "resize",
-    () => {
-      rotateXReach = window.innerWidth < MOBILE_BREAKPOINT ? 0.4 : 1;
-    },
-    { passive: true }
-  );
-
+  // SCROLL → targetProgress (unica lettura di layout, solo qui).
+  // rAF → smoothing + transform della camera, mai getBoundingClientRect
+  // dentro al loop: niente reflow ripetuto ad ogni frame.
   function updateTargetProgress() {
     const rect = section.getBoundingClientRect();
     const scrollable = rect.height - window.innerHeight;
     targetProgress = scrollable > 0 ? clamp01(-rect.top / scrollable) : 0;
   }
+
+  window.addEventListener("scroll", updateTargetProgress, { passive: true });
+  window.addEventListener(
+    "resize",
+    () => {
+      rotateXReach = window.innerWidth < MOBILE_BREAKPOINT ? 0.4 : 1;
+      updateTargetProgress();
+    },
+    { passive: true }
+  );
 
   function stageForTravelT(t) {
     if (t < JOURNEY_STAGE_RILANCI_AT) return "strategia";
@@ -210,13 +218,35 @@ function initJourneyCamera(section, sticky, cameraGroup, pathEl, stages) {
   }
 
   function frame(timestamp) {
-    updateTargetProgress();
     currentProgress += (targetProgress - currentProgress) * JOURNEY_SMOOTHING;
     render(currentProgress, timestamp);
     updateStages(currentProgress);
     sticky.classList.toggle("is-arrival", currentProgress > JOURNEY_ARRIVAL_GLOW_AT);
-    requestAnimationFrame(frame);
+    if (running) requestAnimationFrame(frame);
   }
 
-  requestAnimationFrame(frame);
+  // Il loop gira solo mentre la sezione journey è vicina alla
+  // viewport e la scheda è in primo piano (vedi perf.js): quando
+  // l'utente è ormai su fantasquadre/proclama, o ha cambiato scheda,
+  // non c'è nessuna camera da animare.
+  function syncState() {
+    const shouldRun = sectionVisible && pageVisible;
+    if (shouldRun && !running) {
+      running = true;
+      updateTargetProgress();
+      requestAnimationFrame(frame);
+    } else if (!shouldRun) {
+      running = false;
+    }
+  }
+
+  onJourneyVisibilityChange((visible) => {
+    sectionVisible = visible;
+    syncState();
+  });
+
+  onPageVisibilityChange((visible) => {
+    pageVisible = visible;
+    syncState();
+  });
 }

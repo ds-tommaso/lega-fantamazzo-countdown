@@ -95,6 +95,37 @@ canvas {
 }
 
 /* ------------------------------------------------------------
+   1B. PERFORMANCE — pausa animazioni infinite fuori viewport /
+   a scheda in background.
+
+   perf.js aggiunge/rimuove:
+   - ".anim-paused" sulla sezione (#hero, #pitch-journey,
+     .fantasquadre) quando esce dalla viewport (IntersectionObserver);
+   - "body.is-tab-hidden" quando la scheda passa in background
+     (document.visibilitychange).
+
+   In entrambi i casi le animazioni CSS "infinite" puramente
+   decorative (fasci di luce, foschia, grana, pulsazioni) vengono
+   messe in pausa: nessun motivo di continuare a farle girare
+   quando non c'è nessuno a guardarle.
+   ------------------------------------------------------------ */
+.anim-paused .light-beam,
+.anim-paused .haze,
+.anim-paused .countdown-sep,
+.anim-paused .journey-haze,
+.anim-paused .journey-bid-ticker span,
+.anim-paused .fantasquadre-haze,
+body.is-tab-hidden .grain-overlay,
+body.is-tab-hidden .light-beam,
+body.is-tab-hidden .haze,
+body.is-tab-hidden .countdown-sep,
+body.is-tab-hidden .journey-haze,
+body.is-tab-hidden .journey-bid-ticker span,
+body.is-tab-hidden .fantasquadre-haze {
+  animation-play-state: paused;
+}
+
+/* ------------------------------------------------------------
    2. SIPARIO DI APERTURA + GRANA CINEMATOGRAFICA
    ------------------------------------------------------------ */
 #curtain {
@@ -249,11 +280,18 @@ body.curtain-open #curtain {
   transform: translate3d(calc(var(--mx) * var(--depth, 0) * var(--parallax-range)),
       calc(var(--my) * var(--depth, 0) * var(--parallax-range) * 0.6),
       0);
-  will-change: transform, opacity;
 }
 
 .layer.is-revealed {
   opacity: 1;
+}
+
+/* will-change promuove i layer a layer GPU separati solo mentre il
+   loop del parallax sta davvero scrivendo --mx/--my (vedi
+   parallax.js): tenerli promossi per tutta la vita della pagina
+   sprecherebbe memoria GPU anche a parallax fermo. */
+.parallax-active .layer {
+  will-change: transform;
 }
 
 /* --- Layer 1: cielo notturno --- */
@@ -1865,9 +1903,15 @@ body.is-live .final-shot-line--live {
     grid-column: auto;
   }
 
+  /* Su mobile 10 card con backdrop-filter simultanei sono costose
+     (il browser deve ricampionare e sfocare lo sfondo dietro ad
+     ognuna, ad ogni frame di scroll). L'effetto "vetro" resta,
+     ottenuto con un pannello semitrasparente più opaco invece che
+     con una vera sfocatura dello sfondo. */
   .team-card {
     padding: 1.5rem 1.3rem;
-    backdrop-filter: blur(6px);
+    background: linear-gradient(160deg, rgba(20, 28, 22, 0.72), rgba(7, 13, 10, 0.6));
+    backdrop-filter: none;
   }
 
   .fx-card {

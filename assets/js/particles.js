@@ -10,6 +10,11 @@
  * verticale lentissimo e flicker di opacità. Il numero di
  * particelle si riduce su mobile e con prefers-reduced-motion
  * l'animazione non riparte dopo il primo frame statico.
+ *
+ * Il canvas vive solo nell'hero: ridisegnarlo mentre quella
+ * sezione non è in viewport (o la scheda è in background) è lavoro
+ * sprecato, quindi il loop rAF si ferma e riparte insieme alla
+ * visibilità dell'hero (vedi perf.js).
  */
 function initParticles() {
   const canvas = document.getElementById("particles-canvas");
@@ -23,6 +28,9 @@ function initParticles() {
   let height = 0;
   let particles = [];
   let boosted = false;
+  let running = false;
+  let heroVisible = true;
+  let pageVisible = true;
 
   function particleCountForViewport() {
     return window.innerWidth < MOBILE_BREAKPOINT ? PARTICLE_COUNT_MOBILE : PARTICLE_COUNT_DESKTOP;
@@ -75,7 +83,18 @@ function initParticles() {
       ctx.fill();
     });
 
-    if (!prefersReduced) requestAnimationFrame(render);
+    if (!prefersReduced && running) requestAnimationFrame(render);
+  }
+
+  function syncState() {
+    if (prefersReduced) return;
+    const shouldRun = heroVisible && pageVisible;
+    if (shouldRun && !running) {
+      running = true;
+      requestAnimationFrame(render);
+    } else if (!shouldRun) {
+      running = false;
+    }
   }
 
   window.addEventListener(
@@ -89,7 +108,20 @@ function initParticles() {
 
   resize();
   seed();
-  requestAnimationFrame(render);
+
+  if (prefersReduced) {
+    render(0);
+  } else {
+    onHeroVisibilityChange((visible) => {
+      heroVisible = visible;
+      syncState();
+    });
+
+    onPageVisibilityChange((visible) => {
+      pageVisible = visible;
+      syncState();
+    });
+  }
 
   boostParticlesFn = () => {
     boosted = true;

@@ -10,6 +10,11 @@
  * combinando un lentissimo respiro ambientale con la posizione
  * del mouse, solo su dispositivi con puntatore preciso (desktop).
  * Disabilitato con prefers-reduced-motion.
+ *
+ * Il loop rAF gira solo mentre l'hero è visibile e la scheda è in
+ * primo piano (vedi perf.js): per tutto il resto dello scroll
+ * (giourney, fantasquadre, proclama...) non c'è nessun lavoro da
+ * fare, quindi non gira nulla.
  */
 function initParallax() {
   const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -22,6 +27,9 @@ function initParallax() {
   let targetY = 0;
   let currentX = 0;
   let currentY = 0;
+  let running = false;
+  let heroVisible = true;
+  let pageVisible = true;
 
   if (supportsHover) {
     window.addEventListener(
@@ -49,8 +57,30 @@ function initParallax() {
     root.style.setProperty("--mx", currentX.toFixed(4));
     root.style.setProperty("--my", currentY.toFixed(4));
 
-    requestAnimationFrame(tick);
+    if (running) requestAnimationFrame(tick);
   }
 
-  requestAnimationFrame(tick);
+  // will-change resta attivo sui layer solo mentre il loop gira
+  // davvero: evita di tenere le GPU layer promosse per tutta la
+  // vita della pagina quando il parallax non sta facendo nulla.
+  function syncState() {
+    const shouldRun = heroVisible && pageVisible;
+    root.classList.toggle("parallax-active", shouldRun);
+    if (shouldRun && !running) {
+      running = true;
+      requestAnimationFrame(tick);
+    } else if (!shouldRun) {
+      running = false;
+    }
+  }
+
+  onHeroVisibilityChange((visible) => {
+    heroVisible = visible;
+    syncState();
+  });
+
+  onPageVisibilityChange((visible) => {
+    pageVisible = visible;
+    syncState();
+  });
 }
