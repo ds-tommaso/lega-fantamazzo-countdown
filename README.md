@@ -51,7 +51,6 @@ const EVENT_DATE = "2026-09-07T20:00:00";
 │   │   ├── parallax.js   → parallax cinematografico (mouse + respiro ambientale)
 │   │   ├── journey.js    → camera che segue una linea del campo durante lo scroll (sezione "viaggio")
 │   │   ├── particles.js  → particelle su canvas 2D
-│   │   ├── audio.js      → rumore di stadio opzionale (Web Audio API, solo su click)
 │   │   ├── scroll-reveal.js → reveal a scorrimento della sezione "proclama"
 │   │   ├── page-nav.js   → pulsanti fissi per saltare alla sezione successiva/precedente
 │   │   └── main.js       → bootstrap, caricato per ultimo
@@ -120,5 +119,3 @@ Non è richiesta alcuna configurazione aggiuntiva: nessun backend, nessuna API, 
   c'è drift anche se il browser rallenta o perde frame.
 - Il parallax e le particelle si riducono automaticamente su schermi piccoli e si disattivano
   con `prefers-reduced-motion: reduce`, mantenendo comunque il countdown pienamente funzionante.
-- L'effetto audio (rumore ambientale da stadio, generato via Web Audio API) parte solo dopo un
-  click esplicito sul pulsante dedicato: nessun autoplay.

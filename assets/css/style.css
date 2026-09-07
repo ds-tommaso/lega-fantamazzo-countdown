@@ -807,48 +807,6 @@ body.is-flash::after {
 }
 
 /* ------------------------------------------------------------
-   7. PULSANTE AUDIO
-   ------------------------------------------------------------ */
-.sound-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.6rem 1.3rem;
-  border-radius: 999px;
-  border: 1px solid var(--grey-line);
-  background: rgba(244, 247, 244, 0.04);
-  color: rgba(244, 247, 244, 0.75);
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: 0.85rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  cursor: pointer;
-  backdrop-filter: blur(6px);
-  transition: border-color 0.3s ease, color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
-}
-
-.sound-toggle:hover {
-  border-color: var(--accent-soft);
-  color: var(--white);
-  box-shadow: 0 0 18px rgba(240, 195, 82, 0.12);
-}
-
-.sound-toggle-icon {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--grey-mid);
-  box-shadow: 0 0 0 3px rgba(244, 247, 244, 0.06);
-  transition: background 0.3s ease, box-shadow 0.3s ease;
-}
-
-.sound-toggle[aria-pressed="true"] .sound-toggle-icon {
-  background: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-soft);
-}
-
-/* ------------------------------------------------------------
    8. SEZIONE "IL DESTINO È NELLE VOSTRE MANI" — CAMERA SUL CAMPO
    ------------------------------------------------------------
    .pitch-journey è un contenitore alto che crea la distanza di
@@ -1852,13 +1810,53 @@ body.is-live .final-shot-line--live {
     --parallax-range: 30px;
   }
 
-  /* L'orario resta su un'unica riga: si stringono gap ed etichette. */
+  /* Contenuto ancorato in alto invece che centrato verticalmente:
+     su schermi piccoli il testo dell'hero è più basso dell'intero
+     schermo, e centrarlo lascia un grande vuoto sopra al titolo. */
+  .hero {
+    align-items: flex-start;
+  }
+
+  /* Il campo decorativo in fondo alla hero è ridondante con la
+     telecamera sul campo della sezione "viaggio" più sotto: tolto
+     su mobile per lasciare tutto lo spazio al countdown, che qui
+     diventa l'elemento centrale della hero. */
+  .layer-pitch {
+    display: none;
+  }
+
+  /* Il timer resta SEMPRE su un'unica riga, anche su mobile: niente
+     wrap, le cifre sono le più grandi possibili senza mai andare in
+     overflow orizzontale (misurato, non solo stimato via vw). */
   .countdown {
-    gap: clamp(0.2rem, 1.4vw, 0.55rem);
+    flex-wrap: nowrap;
+    gap: clamp(0.1rem, 1.6vw, 0.4rem);
+    margin-bottom: 1.2rem;
   }
 
   .countdown-unit {
     min-width: 0;
+  }
+
+  .countdown--hero .countdown-value {
+    font-size: clamp(2.4rem, 13vw, 4.3rem);
+  }
+
+  .countdown-sign {
+    font-size: clamp(2.4rem, 13vw, 4.3rem);
+  }
+
+  .countdown--hero .countdown-sep {
+    font-size: clamp(1.8rem, 9.7vw, 3.2rem);
+    padding-bottom: clamp(0.3rem, 1.4vw, 0.6rem);
+  }
+
+  .countdown-sep--ms {
+    font-size: clamp(1.1rem, 5.8vw, 1.9rem);
+  }
+
+  .countdown-unit--ms .countdown-value {
+    font-size: clamp(0.95rem, 5vw, 1.7rem);
   }
 
   .countdown-label {
@@ -1866,19 +1864,18 @@ body.is-live .final-shot-line--live {
     font-size: clamp(0.42rem, 1.6vw, 0.6rem);
   }
 
-  .countdown-sep {
-    padding-bottom: clamp(0.4rem, 1.6vw, 0.9rem);
+  .auction-status {
+    margin-bottom: 1.6rem;
+  }
+
+  .hero-subtitle {
+    margin-bottom: 0.8rem;
   }
 
   .hero-content {
-    padding-top: 4vh;
+    padding-top: 2.2vh;
     padding-left: 0.85rem;
     padding-right: 0.85rem;
-  }
-
-  .pitch-wrap {
-    width: 280%;
-    height: 34%;
   }
 }
 

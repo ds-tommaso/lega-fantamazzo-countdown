@@ -4,8 +4,9 @@
    LEGA FANTAMAZZO — L'ASTA
    main.js — bootstrap. Caricato per ULTIMO: a questo punto tutte
    le funzioni definite negli altri file (config.js, countdown.js,
-   intro.js, parallax.js, journey.js, teams.js, particles.js, audio.js,
-   scroll-reveal.js) sono già disponibili nello stesso scope globale.
+   intro.js, parallax.js, journey.js, teams.js, particles.js,
+   scroll-reveal.js, page-nav.js) sono già disponibili nello stesso
+   scope globale.
    ============================================================ */
 
 /**
@@ -20,7 +21,6 @@ function initPage() {
   initJourney();
   initFantasquadre();
   initParticles();
-  initSoundToggle();
   initScrollReveal();
   initPageNav();
   startCountdown();
