@@ -34,7 +34,7 @@ const EVENT_DATE = "2026-09-07T20:00:00";
 
 ```
 /
-├── index.html            → markup della pagina (hero, sezione card, proclama)
+├── index.html            → markup della pagina (hero, scoreboard, viaggio, squadre, proclama, finale)
 ├── assets/
 │   ├── css/
 │   │   └── style.css     → tutto lo stile (stadio, countdown, viaggio sul campo, responsive, riduzione movimento)
@@ -52,6 +52,26 @@ const EVENT_DATE = "2026-09-07T20:00:00";
 │       └── favicon.svg
 └── README.md
 ```
+
+## Il countdown come scoreboard gigante
+
+Il countdown vive nella sua sezione dedicata `#scoreboard` (subito dopo l'hero),
+non più incastrato tra titolo e claim: una scena `min-height: 100svh` a sé stante,
+con lo stesso campo dell'hero (`.pitch-wrap`/`.pitch`, riusato e affievolito) visibile
+sotto ai numeri. Le cifre usano `clamp()` con `vw` senza un `max-width` fisso, quindi
+su un monitor grande o una TV diventano davvero enormi, mentre su mobile restano
+ancorate al valore minimo del `clamp()` (nessun overflow orizzontale).
+
+## Un solo campo, dall'hero al footer
+
+Il manto erboso (colori `--pitch-a`/`--pitch-b`) non sparisce dopo il "viaggio":
+`Le Fantasquadre`, `Il proclama`, la sezione finale e il footer condividono la stessa
+texture a strisce, affievolita in due custom property (`--pitch-a-dim`/`--pitch-b-dim`)
+così il campo resta percepibile sotto ai testi invece di lasciare il posto a blocchi
+neri piatti. Il footer aggiunge una linea bianca luminosa in cima, come fosse la linea
+di fondo dello stesso campo. Poco prima del footer, `.final-shot` mostra "Il destino vi
+aspetta" oppure "L'asta è iniziata" a seconda di `body.is-live` (già gestito da
+`countdown.js`, nessuna logica nuova).
 
 ## Il "viaggio sul campo" (scroll cinematografico)
 

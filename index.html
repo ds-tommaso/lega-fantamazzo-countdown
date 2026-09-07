@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Teko:wght@400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="assets/css/style.css?v1.1" />
+  <link rel="stylesheet" href="assets/css/style.css?v1.3" />
 </head>
 
 <body>
@@ -102,6 +102,47 @@
 
         <p class="hero-subtitle reveal-step" data-step="6">L'ASTA STA PER COMINCIARE</p>
 
+        <p class="cinematic-line reveal-step" data-step="7">
+          Questa sera non si compra una rosa.<br />
+          Questa sera si conquista la gloria.
+        </p>
+
+        <p class="cinematic-line cinematic-line--sub reveal-step" data-step="7">
+          Preparate i crediti. Preparate le strategie. Preparatevi alla battaglia.
+        </p>
+
+        <p class="hero-claim reveal-step" data-step="7">Che il rilancio abbia inizio.</p>
+
+        <button type="button" id="sound-toggle" class="sound-toggle reveal-step" data-step="7" aria-pressed="false">
+          <span class="sound-toggle-icon" aria-hidden="true"></span>
+          <span class="sound-toggle-text">Attiva audio stadio</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="scoreboard" id="scoreboard" aria-label="Countdown asta Lega Fantamazzo">
+      <div class="scoreboard-field" aria-hidden="true">
+        <div class="pitch-wrap">
+          <div class="pitch">
+            <div class="pitch-halfway"></div>
+            <div class="pitch-circle"></div>
+            <div class="pitch-spot"></div>
+            <div class="pitch-box pitch-box-far">
+              <div class="pitch-box-six"></div>
+            </div>
+            <div class="pitch-box pitch-box-near">
+              <div class="pitch-box-six"></div>
+            </div>
+            <div class="pitch-goal"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="vignette" aria-hidden="true"></div>
+
+      <div class="scoreboard-inner">
+        <p class="kicker reveal-step" data-step="7">Il countdown</p>
+
         <div class="countdown reveal-step" data-step="7" role="timer" aria-label="Tempo rimanente all'inizio dell'asta">
           <div class="countdown-unit">
             <span class="countdown-value" id="hours" aria-hidden="true">00</span>
@@ -127,22 +168,6 @@
         </div>
 
         <p class="countdown-status" id="countdown-status" aria-live="polite"></p>
-
-        <p class="cinematic-line reveal-step" data-step="7">
-          Questa sera non si compra una rosa.<br />
-          Questa sera si conquista la gloria.
-        </p>
-
-        <p class="cinematic-line cinematic-line--sub reveal-step" data-step="7">
-          Preparate i crediti. Preparate le strategie. Preparatevi alla battaglia.
-        </p>
-
-        <p class="hero-claim reveal-step" data-step="7">Che il rilancio abbia inizio.</p>
-
-        <button type="button" id="sound-toggle" class="sound-toggle reveal-step" data-step="7" aria-pressed="false">
-          <span class="sound-toggle-icon" aria-hidden="true"></span>
-          <span class="sound-toggle-text">Attiva audio stadio</span>
-        </button>
       </div>
     </section>
 
@@ -334,22 +359,28 @@
         <p class="manifesto-final">La vergogna.</p>
       </div>
     </section>
+
+    <section class="final-shot" aria-live="polite">
+      <p class="final-shot-pre">Fischio d'inizio.</p>
+      <h2 class="final-shot-line final-shot-line--waiting">Il destino vi aspetta</h2>
+      <h2 class="final-shot-line final-shot-line--live">L'asta è iniziata</h2>
+    </section>
   </main>
 
   <footer class="site-footer">
     <p>Lega Fantamazzo · dal 2012</p>
   </footer>
 
-  <script src="assets/js/config.js?v1.1"></script>
-  <script src="assets/js/countdown.js?v1.1"></script>
-  <script src="assets/js/intro.js?v1.1"></script>
-  <script src="assets/js/parallax.js?v1.1"></script>
-  <script src="assets/js/journey.js?v1.1"></script>
-  <script src="assets/js/teams.js?v1.1"></script>
-  <script src="assets/js/particles.js?v1.1"></script>
-  <script src="assets/js/audio.js?v1.1"></script>
-  <script src="assets/js/scroll-reveal.js?v1.1"></script>
-  <script src="assets/js/main.js?v1.1"></script>
+  <script src="assets/js/config.js?v1.3"></script>
+  <script src="assets/js/countdown.js?v1.3"></script>
+  <script src="assets/js/intro.js?v1.3"></script>
+  <script src="assets/js/parallax.js?v1.3"></script>
+  <script src="assets/js/journey.js?v1.3"></script>
+  <script src="assets/js/teams.js?v1.3"></script>
+  <script src="assets/js/particles.js?v1.3"></script>
+  <script src="assets/js/audio.js?v1.3"></script>
+  <script src="assets/js/scroll-reveal.js?v1.3"></script>
+  <script src="assets/js/main.js?v1.3"></script>
 </body>
 
 </html>

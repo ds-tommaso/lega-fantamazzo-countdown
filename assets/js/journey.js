@@ -20,6 +20,10 @@ const JOURNEY_TRAVEL_END = 0.85; // viaggio lungo il path (dopo: arrivo)
 const JOURNEY_STAGE_RILANCI_AT = 0.33;
 const JOURNEY_STAGE_GLORIA_AT = 0.66;
 
+// Oltre questa soglia (progresso globale della sezione) la camera è
+// ormai davanti alla porta: le luci dello stadio vanno al massimo.
+const JOURNEY_ARRIVAL_GLOW_AT = 0.92;
+
 // Smoothing della camera: più basso = più "pesante"/cinematografico.
 const JOURNEY_SMOOTHING = 0.075;
 
@@ -210,6 +214,7 @@ function initJourneyCamera(section, sticky, cameraGroup, pathEl, stages) {
     currentProgress += (targetProgress - currentProgress) * JOURNEY_SMOOTHING;
     render(currentProgress, timestamp);
     updateStages(currentProgress);
+    sticky.classList.toggle("is-arrival", currentProgress > JOURNEY_ARRIVAL_GLOW_AT);
     requestAnimationFrame(frame);
   }
 

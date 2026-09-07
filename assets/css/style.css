@@ -30,6 +30,13 @@
   --accent: #f0c352;
   --accent-soft: rgba(240, 195, 82, 0.35);
 
+  /* Versioni affievolite delle strisce del campo, riusate come
+     "firma" del manto erboso in tutte le sezioni successive al
+     viaggio (fantasquadre, proclama, finale, footer), cosi il
+     campo non sparisce mai dietro al contenuto. */
+  --pitch-a-dim: rgba(22, 60, 35, 0.55);
+  --pitch-b-dim: rgba(29, 74, 43, 0.55);
+
   /* Luci / foschia */
   --beam-color: rgba(233, 244, 255, 0.85);
   --sky-glow: rgba(157, 214, 255, 0.16);
@@ -619,11 +626,12 @@ body.curtain-open #curtain {
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum" 1;
-  font-size: clamp(2.6rem, 11vw, 6.4rem);
+  font-size: clamp(3rem, 13vw, 20rem);
   line-height: 1;
   color: var(--white);
   text-shadow:
     0 0 22px rgba(240, 195, 82, 0.22),
+    0 0 90px rgba(240, 195, 82, 0.12),
     0 6px 24px rgba(0, 0, 0, 0.7);
   transform: translateZ(0);
 }
@@ -652,7 +660,7 @@ body.curtain-open #curtain {
 }
 
 .countdown-unit--ms .countdown-value {
-  font-size: clamp(1.5rem, 5.2vw, 3rem);
+  font-size: clamp(1.6rem, 6.2vw, 9.5rem);
   font-weight: 500;
   opacity: 0.72;
   color: rgba(244, 247, 244, 0.92);
@@ -672,10 +680,10 @@ body.curtain-open #curtain {
 .countdown-sep {
   font-family: var(--font-count);
   font-weight: 500;
-  font-size: clamp(2rem, 8vw, 4.6rem);
+  font-size: clamp(2.2rem, 10vw, 14.5rem);
   line-height: 1;
   color: var(--accent);
-  padding-bottom: clamp(0.6rem, 2vw, 1.1rem);
+  padding-bottom: clamp(0.6rem, 2vw, 1.6rem);
   animation: sep-pulse 2.6s ease-in-out infinite;
   text-shadow: 0 0 14px var(--accent-soft);
 }
@@ -742,6 +750,63 @@ body.is-flash::after {
   100% {
     opacity: 0;
   }
+}
+
+/* ------------------------------------------------------------
+   5B. SCOREBOARD — IL TIMER GIGANTE
+   ------------------------------------------------------------
+   Scena full-screen dedicata al countdown: stesso campo (riusa
+   .pitch-wrap/.pitch dell'hero, appena affievolito) visibile sotto
+   ai numeri, che qui possono diventare davvero enormi su schermi
+   grandi grazie a clamp() con vw (vedi sezione 5 sopra).
+   ------------------------------------------------------------ */
+.scoreboard {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background:
+    radial-gradient(60% 50% at 50% 15%, var(--sky-glow), transparent 70%),
+    linear-gradient(to bottom, #01050a 0%, #030a08 40%, var(--green-dark) 100%);
+}
+
+.scoreboard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(60% 45% at 50% 42%, rgba(4, 7, 10, 0.5), transparent 70%);
+}
+
+.scoreboard-field {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0.5;
+  filter: brightness(0.65) saturate(0.9);
+  pointer-events: none;
+}
+
+.scoreboard-inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  padding: 4vh clamp(1rem, 4vw, 3rem);
+}
+
+.scoreboard-inner .kicker {
+  margin-bottom: clamp(1rem, 3vh, 2rem);
 }
 
 /* ------------------------------------------------------------
@@ -843,6 +908,24 @@ body.is-flash::after {
     var(--near-black);
   --journey-rotateX: 58deg;
   --journey-glow: 0.5;
+}
+
+/* Bagliore d'arrivo: la camera è davanti alla porta, luci al
+   massimo. Attivato da journey.js quando il progresso locale
+   supera ~0.92 (fase di arrivo finale). */
+.journey-sticky::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: radial-gradient(45% 40% at 50% 55%, rgba(244, 247, 244, 0.2), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-cinematic);
+}
+
+.journey-sticky.is-arrival::after {
+  opacity: 1;
 }
 
 .journey-backdrop {
@@ -1087,6 +1170,7 @@ body.is-flash::after {
   background:
     radial-gradient(65% 55% at 50% 0%, rgba(157, 214, 255, 0.08), transparent 70%),
     radial-gradient(120% 70% at 50% 100%, rgba(15, 51, 32, 0.45), transparent 60%),
+    repeating-linear-gradient(90deg, var(--pitch-a-dim) 0px, var(--pitch-a-dim) 64px, var(--pitch-b-dim) 64px, var(--pitch-b-dim) 128px),
     var(--black);
   overflow: hidden;
 }
@@ -1419,6 +1503,7 @@ body.is-flash::after {
   padding: clamp(4rem, 10vh, 7rem) 1.5rem;
   background:
     radial-gradient(70% 50% at 50% 0%, rgba(15, 51, 32, 0.28), transparent 70%),
+    repeating-linear-gradient(90deg, var(--pitch-a-dim) 0px, var(--pitch-a-dim) 64px, var(--pitch-b-dim) 64px, var(--pitch-b-dim) 128px),
     var(--black);
   overflow: hidden;
 }
@@ -1430,10 +1515,29 @@ body.is-flash::after {
   left: 0;
   right: 0;
   height: 1px;
+  z-index: 1;
   background: linear-gradient(90deg, transparent, var(--grey-line), transparent);
 }
 
+/* Sagoma della porta, appena percettibile: il campo che la camera
+   ha attraversato nel viaggio è arrivato fin qui, sotto al proclama. */
+.manifesto::after {
+  content: "";
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  width: min(46%, 420px);
+  aspect-ratio: 2 / 1;
+  transform: translateX(-50%);
+  border: 3px solid rgba(244, 247, 244, 0.12);
+  border-bottom: none;
+  pointer-events: none;
+  z-index: 0;
+}
+
 .manifesto-inner {
+  position: relative;
+  z-index: 1;
   max-width: 62ch;
   margin: 0 auto;
   text-align: center;
@@ -1545,22 +1649,101 @@ body.is-flash::after {
 }
 
 /* ------------------------------------------------------------
-   10. FOOTER
+   9B. SEZIONE FINALE — "IL DESTINO VI ASPETTA" / "L'ASTA È INIZIATA"
+   ------------------------------------------------------------
+   Ultimo battito narrativo prima del footer: quale delle due righe
+   sia visibile dipende solo da body.is-live, già gestito da
+   countdown.js in handleEventStarted(). Nessuna nuova logica JS.
+   ------------------------------------------------------------ */
+.final-shot {
+  position: relative;
+  padding: clamp(3.5rem, 10vh, 6rem) 1.5rem;
+  text-align: center;
+  overflow: hidden;
+  background:
+    radial-gradient(60% 60% at 50% 40%, rgba(240, 195, 82, 0.07), transparent 70%),
+    repeating-linear-gradient(90deg, var(--pitch-a-dim) 0px, var(--pitch-a-dim) 64px, var(--pitch-b-dim) 64px, var(--pitch-b-dim) 128px),
+    var(--black);
+}
+
+.final-shot-pre {
+  margin: 0 0 0.8rem;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: clamp(0.7rem, 1.6vw, 0.95rem);
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: rgba(244, 247, 244, 0.5);
+}
+
+.final-shot-line {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2rem, 6vw, 3.6rem);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--white);
+  text-shadow: 0 0 30px rgba(157, 214, 255, 0.2), 0 10px 30px rgba(0, 0, 0, 0.7);
+}
+
+.final-shot-line--live {
+  display: none;
+  color: var(--accent);
+  text-shadow: 0 0 34px var(--accent-soft), 0 0 60px rgba(240, 195, 82, 0.3);
+}
+
+body.is-live .final-shot-line--waiting {
+  display: none;
+}
+
+body.is-live .final-shot-line--live {
+  display: block;
+}
+
+/* ------------------------------------------------------------
+   10. FOOTER — LA LINEA DI FONDO DELLO STESSO CAMPO
    ------------------------------------------------------------ */
 .site-footer {
-  padding: 1.6rem 1.5rem;
+  position: relative;
+  padding: 2.4rem 1.5rem 1.8rem;
   text-align: center;
-  background: var(--near-black);
-  border-top: 1px solid var(--grey-line);
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(90deg, var(--pitch-a-dim) 0px, var(--pitch-a-dim) 64px, var(--pitch-b-dim) 64px, var(--pitch-b-dim) 128px),
+    var(--near-black);
+}
+
+.site-footer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(4, 7, 10, 0.35), rgba(4, 7, 10, 0.9) 60%);
+  pointer-events: none;
+}
+
+.site-footer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 12%;
+  right: 12%;
+  height: 2px;
+  background: var(--white);
+  opacity: 0.75;
+  box-shadow: 0 0 22px rgba(244, 247, 244, 0.5);
+  pointer-events: none;
 }
 
 .site-footer p {
+  position: relative;
+  z-index: 1;
   margin: 0;
   font-family: var(--font-body);
   font-size: 0.8rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(244, 247, 244, 0.35);
+  color: rgba(244, 247, 244, 0.5);
 }
 
 /* ------------------------------------------------------------
