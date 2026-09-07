@@ -5,15 +5,20 @@
    countdown.js — calcolo, formattazione e rendering del countdown.
    Dipende dalle costanti/variabili definite in config.js.
 
-   Tre stati, decisi solo confrontando Date.now() con targetTime:
+   Quattro stati, decisi solo confrontando Date.now() con targetTime
+   ed endTime:
    - "before"  → l'asta non è ancora iniziata: timer negativo (segno rosso)
-   - "live"    → l'asta è iniziata da meno di AUCTION_VISIBLE_AFTER_START_MS:
+   - "live"    → l'asta è iniziata da meno di AUCTION_VISIBLE_AFTER_START_MS
+                 (e non è ancora stata raggiunta endTime, se nota):
                  timer positivo (segno verde) che conta il tempo trascorso
-   - "expired" → oltre quella soglia: il blocco countdown sparisce del tutto
+   - "ended"   → è nota AUCTION_END_DATE ed è stata raggiunta: mostra la
+                 durata finale (ore/minuti) e l'augurio di buon campionato
+   - "expired" → fallback quando AUCTION_END_DATE non è nota: oltre la
+                 soglia AUCTION_VISIBLE_AFTER_START_MS il blocco sparisce
    ============================================================ */
 
 /**
- * Determina lo stato dell'asta rispetto a targetTime.
+ * Determina lo stato dell'asta rispetto a targetTime/endTime.
  * La fonte di verità è sempre Date.now(): nessun contatore
  * viene decrementato manualmente, quindi non c'è drift.
  */
@@ -24,8 +29,12 @@ function calculateAuctionState() {
     return { phase: "before", ms: diff };
   }
 
+  if (endTime !== null && Date.now() >= endTime) {
+    return { phase: "ended", ms: endTime - targetTime };
+  }
+
   const elapsedMs = -diff;
-  if (elapsedMs >= AUCTION_VISIBLE_AFTER_START_MS) {
+  if (endTime === null && elapsedMs >= AUCTION_VISIBLE_AFTER_START_MS) {
     return { phase: "expired", ms: elapsedMs };
   }
 
@@ -109,12 +118,17 @@ function scheduleCountdown() {
  * sincronizzato con l'orario reale.
  */
 function updateCountdown() {
-  if (eventExpired) return;
+  if (eventExpired || eventEnded) return;
 
   const { phase, ms } = calculateAuctionState();
 
   if (phase !== "before" && !eventStarted) {
     handleEventStarted();
+  }
+
+  if (phase === "ended") {
+    handleEventEnded(ms);
+    return;
   }
 
   if (phase === "expired") {
@@ -198,4 +212,34 @@ function handleEventExpired() {
 
   dom.statusWrap.classList.add("is-expired");
   dom.liveRegion.textContent = "";
+}
+
+/**
+ * Quando è nota AUCTION_END_DATE e viene raggiunta, l'asta risulta
+ * "terminata": invece di sparire (come nello stato "expired"), il
+ * blocco mostra la durata finale (ore/minuti, fissa: non conta più)
+ * e un augurio di buon campionato per tutti.
+ */
+function handleEventEnded(durationMs) {
+  if (eventEnded) return;
+  eventEnded = true;
+
+  document.body.classList.add("is-ended");
+  dom.statusWrap.classList.add("is-ended");
+  dom.countdownBlock.classList.remove("is-before", "is-live");
+
+  const { hours, minutes } = msToUnits(durationMs);
+
+  dom.phase.textContent = "L'ASTA È TERMINATA";
+  setUnitText(dom.hours, "hours", String(hours));
+  setUnitText(dom.minutes, "minutes", formatUnit(minutes));
+
+  const message = "Buon campionato a tutti! 🏆";
+  dom.endedMessage.textContent = message;
+  dom.liveRegion.textContent =
+    `L'asta è terminata dopo ${hours} ore e ${minutes} minuti. ${message}`;
+
+  // Senza segno/secondi/ms la riga è ancora più corta: ricalcola la
+  // taglia su mobile (vedi handleEventStarted()).
+  fitCountdownRow();
 }

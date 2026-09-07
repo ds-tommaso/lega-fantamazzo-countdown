@@ -12,14 +12,21 @@
 
 // ========================================
 // CONFIGURAZIONE ASTA
-// Modifica SOLO questa data e ora.
+// Modifica SOLO queste date/ore.
 // Formato: "AAAA-MM-GGTHH:MM:SS" (senza "Z": viene interpretata
 // come ora locale del browser di chi visita la pagina).
 // ========================================
 const EVENT_DATE = "2026-09-07T21:10:00";
 
+// Data/ora di fine asta. Finché non è nota si lascia "": il countdown
+// si comporta come prima (sparisce dopo AUCTION_VISIBLE_AFTER_START_HOURS).
+// Una volta valorizzata, appena raggiunta mostra lo stato "asta terminata"
+// (durata finale ore/minuti + augurio) al posto della sparizione.
+const AUCTION_END_DATE = "2026-09-08T02:00:00";
+
 // Per quante ore dopo l'inizio restare visibile il countdown
 // (stato "L'asta è iniziata" col segno verde). Dopo, il blocco sparisce.
+// Ignorato quando AUCTION_END_DATE è valorizzata (vedi sopra).
 const AUCTION_VISIBLE_AFTER_START_HOURS = 6;
 
 // Altre impostazioni regolabili
@@ -35,10 +42,12 @@ const INTRO_CURTAIN_OPEN_AT = 950; // ms: apertura sipario dopo il pallone (sost
 // Stato condiviso e riferimenti DOM
 // ------------------------------------------------------------
 const targetTime = new Date(EVENT_DATE).getTime();
+const endTime = AUCTION_END_DATE ? new Date(AUCTION_END_DATE).getTime() : null;
 const AUCTION_VISIBLE_AFTER_START_MS = AUCTION_VISIBLE_AFTER_START_HOURS * 3600000;
 
 let eventStarted = false;
 let eventExpired = false;
+let eventEnded = false;
 let boostParticlesFn = () => { };
 
 const dom = {};
@@ -58,4 +67,5 @@ function cacheDom() {
   dom.statusWrap = document.getElementById("auction-status");
   dom.countdownBlock = document.getElementById("countdown-block");
   dom.liveRegion = document.getElementById("countdown-live");
+  dom.endedMessage = document.getElementById("auction-ended-message");
 }

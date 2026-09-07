@@ -646,6 +646,32 @@ body.curtain-open #curtain {
   display: none;
 }
 
+/* Stato "asta terminata" (AUCTION_END_DATE raggiunta): a differenza di
+   is-expired il blocco resta visibile, ma mostra solo ore/minuti (durata
+   finale, fissa) e l'augurio, nascondendo segno/secondi/millisecondi. */
+.auction-status.is-ended .countdown-sign,
+.auction-status.is-ended .countdown-unit--seconds,
+.auction-status.is-ended .countdown-sep--seconds,
+.auction-status.is-ended .countdown-unit--ms,
+.auction-status.is-ended .countdown-sep--ms {
+  display: none;
+}
+
+.auction-ended-message {
+  display: none;
+  margin: 0.6rem 0 0;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: clamp(0.95rem, 2.6vw, 1.5rem);
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  text-shadow: 0 0 22px var(--accent-soft);
+}
+
+.auction-status.is-ended .auction-ended-message {
+  display: block;
+}
+
 .hero-subtitle {
   margin: 0 0 1.1rem;
   font-family: var(--font-body);
@@ -796,6 +822,12 @@ body.curtain-open #curtain {
 #countdown-block.is-live .countdown-value {
   color: #3ddc84;
   text-shadow: 0 0 22px rgba(61, 220, 132, 0.35);
+}
+
+/* Stato "asta terminata": durata finale ore/minuti in oro, come trofeo. */
+.auction-status.is-ended .countdown-value {
+  color: var(--accent);
+  text-shadow: 0 0 22px var(--accent-soft);
 }
 
 body.is-live .light-beam {
@@ -1721,7 +1753,8 @@ body.is-flash::after {
   text-shadow: 0 0 30px rgba(157, 214, 255, 0.2), 0 10px 30px rgba(0, 0, 0, 0.7);
 }
 
-.final-shot-line--live {
+.final-shot-line--live,
+.final-shot-line--ended {
   display: none;
   color: var(--accent);
   text-shadow: 0 0 34px var(--accent-soft), 0 0 60px rgba(240, 195, 82, 0.3);
@@ -1732,6 +1765,16 @@ body.is-live .final-shot-line--waiting {
 }
 
 body.is-live .final-shot-line--live {
+  display: block;
+}
+
+/* Terminata: sostituisce anche "L'asta è iniziata" con l'augurio. */
+body.is-ended .final-shot-line--waiting,
+body.is-ended .final-shot-line--live {
+  display: none;
+}
+
+body.is-ended .final-shot-line--ended {
   display: block;
 }
 
