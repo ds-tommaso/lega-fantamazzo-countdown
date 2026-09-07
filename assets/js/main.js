@@ -30,9 +30,9 @@ function initPage() {
 
 document.addEventListener("DOMContentLoaded", initPage);
 
-/* Ricarica automatica della pagina ogni 5 minuti, per tenere
+/* Ricarica automatica della pagina ogni 2 minuti, per tenere
    allineati countdown e contenuti senza intervento manuale. */
-var PAGE_RELOAD_INTERVAL_MS = 5 * 60 * 1000;
+var PAGE_RELOAD_INTERVAL_MS = 2 * 60 * 1000;
 setTimeout(function () {
   window.location.reload();
 }, PAGE_RELOAD_INTERVAL_MS);
