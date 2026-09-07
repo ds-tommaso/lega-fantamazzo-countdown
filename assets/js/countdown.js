@@ -140,6 +140,10 @@ function handleEventStarted() {
   dom.countdownBlock.classList.add("is-live");
   dom.sign.textContent = "+";
 
+  // Senza i millisecondi la riga è più corta: ricalcola la taglia
+  // su mobile perché torni a riempire il 100% della larghezza.
+  fitCountdownRow();
+
   boostParticlesFn();
 }
 

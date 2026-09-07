@@ -5,8 +5,8 @@
    main.js — bootstrap. Caricato per ULTIMO: a questo punto tutte
    le funzioni definite negli altri file (config.js, countdown.js,
    intro.js, parallax.js, journey.js, teams.js, particles.js,
-   scroll-reveal.js, page-nav.js) sono già disponibili nello stesso
-   scope globale.
+   scroll-reveal.js, page-nav.js, countdown-fit.js) sono già
+   disponibili nello stesso scope globale.
    ============================================================ */
 
 /**
@@ -23,6 +23,7 @@ function initPage() {
   initParticles();
   initScrollReveal();
   initPageNav();
+  initCountdownFit();
   startCountdown();
 }
 
