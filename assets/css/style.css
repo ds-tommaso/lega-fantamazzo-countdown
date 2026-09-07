@@ -1,0 +1,2116 @@
+/* ============================================================
+   LEGA FANTAMAZZO — L'ASTA
+   Stylesheet unico. Organizzato per sezioni, nessuna dipendenza
+   esterna oltre ai Google Font caricati in index.html.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   1. RESET DI BASE + CUSTOM PROPERTIES
+   ------------------------------------------------------------ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  /* Palette */
+  --black: #04070a;
+  --near-black: #070d0a;
+  --green-dark: #0b2417;
+  --green-deep: #0f3320;
+  --pitch-a: #163c23;
+  --pitch-b: #1d4a2b;
+  --white: #f4f7f4;
+  --grey-dark: #141917;
+  --grey-mid: #3a423d;
+  --grey-line: rgba(244, 247, 244, 0.14);
+
+  /* Accent: oro da trofeo, usato con parsimonia */
+  --accent: #f0c352;
+  --accent-soft: rgba(240, 195, 82, 0.35);
+
+  /* Versioni affievolite delle strisce del campo, riusate come
+     "firma" del manto erboso in tutte le sezioni successive al
+     viaggio (fantasquadre, proclama, finale, footer), cosi il
+     campo non sparisce mai dietro al contenuto. */
+  --pitch-a-dim: rgba(22, 60, 35, 0.55);
+  --pitch-b-dim: rgba(29, 74, 43, 0.55);
+
+  /* Luci / foschia */
+  --beam-color: rgba(233, 244, 255, 0.85);
+  --sky-glow: rgba(157, 214, 255, 0.16);
+
+  /* Tipografia */
+  --font-display: "Anton", "Arial Narrow", sans-serif;
+  --font-count: "Teko", "Arial Narrow", sans-serif;
+  --font-body: "Barlow Condensed", "Segoe UI", sans-serif;
+
+  /* Parallax */
+  --parallax-range: 120px;
+  --mx: 0;
+  --my: 0;
+
+  /* Timing */
+  --ease-cinematic: cubic-bezier(0.16, 0.84, 0.44, 1);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+canvas {
+  max-width: 100%;
+  display: block;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* ------------------------------------------------------------
+   1B. PERFORMANCE — pausa animazioni infinite fuori viewport /
+   a scheda in background.
+
+   perf.js aggiunge/rimuove:
+   - ".anim-paused" sulla sezione (#hero, #pitch-journey,
+     .fantasquadre) quando esce dalla viewport (IntersectionObserver);
+   - "body.is-tab-hidden" quando la scheda passa in background
+     (document.visibilitychange).
+
+   In entrambi i casi le animazioni CSS "infinite" puramente
+   decorative (fasci di luce, foschia, grana, pulsazioni) vengono
+   messe in pausa: nessun motivo di continuare a farle girare
+   quando non c'è nessuno a guardarle.
+   ------------------------------------------------------------ */
+.anim-paused .light-beam,
+.anim-paused .haze,
+.anim-paused .countdown-sep,
+.anim-paused .journey-haze,
+.anim-paused .journey-bid-ticker span,
+.anim-paused .fantasquadre-haze,
+body.is-tab-hidden .grain-overlay,
+body.is-tab-hidden .light-beam,
+body.is-tab-hidden .haze,
+body.is-tab-hidden .countdown-sep,
+body.is-tab-hidden .journey-haze,
+body.is-tab-hidden .journey-bid-ticker span,
+body.is-tab-hidden .fantasquadre-haze {
+  animation-play-state: paused;
+}
+
+/* ------------------------------------------------------------
+   2. SIPARIO DI APERTURA + GRANA CINEMATOGRAFICA
+   ------------------------------------------------------------ */
+#curtain {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 200;
+  opacity: 1;
+  pointer-events: none;
+  transition: opacity 1.2s var(--ease-cinematic);
+}
+
+body.curtain-open #curtain {
+  opacity: 0;
+}
+
+.grain-overlay {
+  position: fixed;
+  inset: -10%;
+  z-index: 150;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-size: 160px 160px;
+  animation: grain-shift 1.4s steps(4) infinite;
+}
+
+@keyframes grain-shift {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(-2%, 2%);
+  }
+
+  50% {
+    transform: translate(2%, -1%);
+  }
+
+  75% {
+    transform: translate(-1%, -2%);
+  }
+
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+/* --- Pallone cinematografico: viene verso la camera nel buio --- */
+#intro-ball {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 30%, #ffffff, #d8dcd8 42%, #262a26 100%);
+  box-shadow:
+    0 0 60px 14px rgba(244, 247, 244, 0.3),
+    inset -8px -8px 16px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transform: scale(0.04);
+  filter: blur(8px);
+  overflow: hidden;
+}
+
+#intro-ball.is-approaching {
+  animation: ball-approach 850ms cubic-bezier(0.6, 0, 0.85, 0.35) forwards;
+}
+
+#intro-ball.is-gone {
+  transition: opacity 0.15s ease-out;
+  opacity: 0 !important;
+}
+
+@keyframes ball-approach {
+  0% {
+    opacity: 0;
+    transform: scale(0.04);
+    filter: blur(9px);
+  }
+
+  14% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(9.5);
+    filter: blur(0);
+  }
+}
+
+.ball-seam {
+  position: absolute;
+  background: rgba(20, 25, 20, 0.55);
+  border-radius: 2px;
+}
+
+.ball-seam-1 {
+  top: 20%;
+  left: 8%;
+  width: 84%;
+  height: 2px;
+  transform: rotate(20deg);
+}
+
+.ball-seam-2 {
+  top: 50%;
+  left: 4%;
+  width: 92%;
+  height: 2px;
+}
+
+.ball-seam-3 {
+  top: 76%;
+  left: 10%;
+  width: 80%;
+  height: 2px;
+  transform: rotate(-18deg);
+}
+
+/* ------------------------------------------------------------
+   3. HERO — SCENA STADIO
+   ------------------------------------------------------------ */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--black);
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1.6s var(--ease-cinematic);
+  transform: translate3d(calc(var(--mx) * var(--depth, 0) * var(--parallax-range)),
+      calc(var(--my) * var(--depth, 0) * var(--parallax-range) * 0.6),
+      0);
+}
+
+.layer.is-revealed {
+  opacity: 1;
+}
+
+/* will-change promuove i layer a layer GPU separati solo mentre il
+   loop del parallax sta davvero scrivendo --mx/--my (vedi
+   parallax.js): tenerli promossi per tutta la vita della pagina
+   sprecherebbe memoria GPU anche a parallax fermo. */
+.parallax-active .layer {
+  will-change: transform;
+}
+
+/* --- Layer 1: cielo notturno --- */
+.layer-sky {
+  background:
+    radial-gradient(60% 50% at 50% 18%, var(--sky-glow), transparent 70%),
+    linear-gradient(to bottom, #01050a 0%, #030a08 35%, var(--green-dark) 70%, var(--green-deep) 100%);
+}
+
+/* --- Layer 2: tribune --- */
+.layer-stands {
+  background:
+    radial-gradient(120% 60% at 50% 0%, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.55) 100%),
+    repeating-linear-gradient(180deg,
+      rgba(255, 255, 255, 0.028) 0px,
+      rgba(255, 255, 255, 0.028) 2px,
+      rgba(0, 0, 0, 0.12) 2px,
+      rgba(0, 0, 0, 0.12) 7px);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 38%, transparent 62%);
+  mask-image: linear-gradient(to bottom, black 0%, black 38%, transparent 62%);
+  opacity: 0;
+}
+
+.layer-stands.is-revealed {
+  opacity: 0.9;
+}
+
+/* --- Layer 3: fasci di luce --- */
+.layer-lights {
+  overflow: hidden;
+}
+
+.light-beam {
+  position: absolute;
+  top: -10%;
+  width: 26vw;
+  max-width: 420px;
+  height: 80vh;
+  background: linear-gradient(to bottom, var(--beam-color), rgba(233, 244, 255, 0));
+  clip-path: polygon(48% 0%, 52% 0%, 100% 100%, 0% 100%);
+  filter: blur(6px);
+  opacity: 0.1;
+  mix-blend-mode: screen;
+  transform-origin: top center;
+}
+
+.beam-1 {
+  left: -4%;
+  animation: beam-sway 16s ease-in-out infinite;
+}
+
+.beam-2 {
+  left: 18%;
+  animation: beam-sway 19s ease-in-out infinite reverse;
+}
+
+.beam-3 {
+  right: 18%;
+  animation: beam-sway 21s ease-in-out infinite;
+}
+
+.beam-4 {
+  right: -4%;
+  animation: beam-sway 17s ease-in-out infinite reverse;
+}
+
+@keyframes beam-sway {
+
+  0%,
+  100% {
+    transform: rotate(-4deg);
+    opacity: 0.08;
+  }
+
+  50% {
+    transform: rotate(4deg);
+    opacity: 0.16;
+  }
+}
+
+/* --- Layer 4: foschia --- */
+.layer-haze {
+  overflow: hidden;
+}
+
+.haze {
+  position: absolute;
+  left: -20%;
+  width: 140%;
+  height: 34%;
+  background: radial-gradient(closest-side, rgba(244, 247, 244, 0.16), transparent 75%);
+  filter: blur(18px);
+  opacity: 0.35;
+}
+
+.haze-1 {
+  top: 30%;
+  animation: haze-drift 46s ease-in-out infinite;
+}
+
+.haze-2 {
+  top: 48%;
+  animation: haze-drift 60s ease-in-out infinite reverse;
+  opacity: 0.22;
+}
+
+.haze-3 {
+  top: 62%;
+  animation: haze-drift 52s ease-in-out infinite;
+  opacity: 0.28;
+}
+
+@keyframes haze-drift {
+
+  0%,
+  100% {
+    transform: translateX(-4%);
+  }
+
+  50% {
+    transform: translateX(4%);
+  }
+}
+
+/* --- Layer 5: campo da calcio in prospettiva --- */
+.layer-pitch {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.pitch-wrap {
+  position: relative;
+  width: 160%;
+  max-width: 1400px;
+  height: 46%;
+  min-height: 220px;
+  perspective: 700px;
+  perspective-origin: 50% 0%;
+}
+
+.pitch {
+  position: absolute;
+  inset: 0;
+  transform: rotateX(58deg);
+  transform-origin: 50% 100%;
+  background:
+    repeating-linear-gradient(90deg,
+      var(--pitch-a) 0px,
+      var(--pitch-a) 64px,
+      var(--pitch-b) 64px,
+      var(--pitch-b) 128px);
+  border: 3px solid rgba(244, 247, 244, 0.75);
+  box-shadow:
+    inset 0 0 90px rgba(0, 0, 0, 0.55),
+    0 0 120px rgba(0, 0, 0, 0.6);
+}
+
+.pitch-halfway {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  background: rgba(244, 247, 244, 0.75);
+}
+
+.pitch-circle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 22%;
+  aspect-ratio: 1 / 1;
+  border: 2px solid rgba(244, 247, 244, 0.75);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.pitch-spot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(244, 247, 244, 0.75);
+  transform: translate(-50%, -50%);
+}
+
+.pitch-box {
+  position: absolute;
+  left: 50%;
+  width: 46%;
+  border: 2px solid rgba(244, 247, 244, 0.7);
+  transform: translateX(-50%);
+}
+
+.pitch-box-far {
+  top: 0;
+  height: 16%;
+  border-top: none;
+}
+
+.pitch-box-near {
+  bottom: 0;
+  height: 26%;
+  border-bottom: none;
+}
+
+.pitch-box-six {
+  position: absolute;
+  left: 50%;
+  width: 50%;
+  height: 55%;
+  border: 2px solid rgba(244, 247, 244, 0.6);
+  transform: translateX(-50%);
+}
+
+.pitch-box-far .pitch-box-six {
+  top: 0;
+  border-top: none;
+}
+
+.pitch-box-near .pitch-box-six {
+  bottom: 0;
+  border-bottom: none;
+}
+
+.pitch-goal {
+  position: absolute;
+  top: -3%;
+  left: 50%;
+  width: 16%;
+  height: 6%;
+  border: 3px solid rgba(244, 247, 244, 0.85);
+  border-bottom: none;
+  transform: translateX(-50%);
+  box-shadow: 0 0 18px rgba(244, 247, 244, 0.35);
+}
+
+/* --- Layer 6: particelle --- */
+.layer-particles {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* --- Vignettatura --- */
+.vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: radial-gradient(120% 90% at 50% 45%, transparent 45%, rgba(0, 0, 0, 0.35) 78%, rgba(0, 0, 0, 0.82) 100%);
+}
+
+/* ------------------------------------------------------------
+   4. CONTENUTO HERO
+   ------------------------------------------------------------ */
+.hero-content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 6vh 1.25rem 8vh;
+  width: 100%;
+  max-width: 980px;
+  transform: translate3d(calc(var(--mx) * var(--depth, 0) * var(--parallax-range)),
+      calc(var(--my) * var(--depth, 0) * var(--parallax-range) * 0.6),
+      0);
+}
+
+.reveal-step {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.9s var(--ease-cinematic), transform 0.9s var(--ease-cinematic);
+}
+
+.reveal-step.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.kicker {
+  margin: 0 0 0.6rem;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: clamp(0.7rem, 1.6vw, 0.95rem);
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: rgba(244, 247, 244, 0.6);
+}
+
+.hero-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.6rem, 10vw, 7.5rem);
+  line-height: 0.98;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--white);
+  background: linear-gradient(180deg, #ffffff 0%, #f4f7f4 45%, #cdd6cf 60%, #ffffff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow:
+    0 0 18px rgba(244, 247, 244, 0.25),
+    0 0 46px rgba(157, 214, 255, 0.18),
+    0 10px 30px rgba(0, 0, 0, 0.65);
+}
+
+.title-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 1.1rem 0;
+}
+
+.title-divider span {
+  width: clamp(28px, 6vw, 64px);
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent));
+}
+
+.title-divider span:last-child {
+  background: linear-gradient(90deg, var(--accent), transparent);
+}
+
+.title-divider i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 12px 2px var(--accent-soft);
+}
+
+.auction-status {
+  /* .hero-content è un flex a colonna con align-items:center: senza
+     stretch, questo elemento (flex item) si restringerebbe al
+     contenuto invece di occupare la larghezza disponibile, rendendo
+     inattendibile qualunque misura fatta su di lui in JS (vedi
+     assets/js/countdown-fit.js) e vanificando il bordo sx/dx dato
+     dal padding di .hero-content. */
+  align-self: stretch;
+  margin: 0 0 2.4rem;
+}
+
+.auction-status.is-expired {
+  display: none;
+}
+
+.hero-subtitle {
+  margin: 0 0 1.1rem;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: clamp(0.95rem, 2.6vw, 1.5rem);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(244, 247, 244, 0.85);
+}
+
+/* ------------------------------------------------------------
+   5. COUNTDOWN
+   ------------------------------------------------------------ */
+.countdown {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: clamp(0.35rem, 1.6vw, 1rem);
+  margin-bottom: 2.2rem;
+}
+
+.countdown-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 2.3ch;
+}
+
+.countdown-value {
+  font-family: var(--font-count);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  font-size: clamp(3rem, 13vw, 20rem);
+  line-height: 1;
+  color: var(--white);
+  text-shadow:
+    0 0 22px rgba(240, 195, 82, 0.22),
+    0 0 90px rgba(240, 195, 82, 0.12),
+    0 6px 24px rgba(0, 0, 0, 0.7);
+  transform: translateZ(0);
+}
+
+.countdown-value.is-changed {
+  animation: digit-change 0.42s var(--ease-cinematic);
+}
+
+@keyframes digit-change {
+  0% {
+    opacity: 0.4;
+    transform: translateY(-6%) scaleY(0.92);
+    filter: blur(2px);
+  }
+
+  60% {
+    opacity: 1;
+    transform: translateY(1%) scaleY(1.12);
+    filter: blur(0);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
+}
+
+/* Variante compatta usata nell'hero (al posto della vecchia
+   "scoreboard" a schermo intero): stessa struttura, cifre più
+   piccole per convivere con titolo e testi cinematografici. */
+.countdown--hero .countdown-value {
+  font-size: clamp(1.8rem, 7vw, 3.6rem);
+}
+
+.countdown--hero .countdown-sep {
+  font-size: clamp(1.5rem, 5.6vw, 2.9rem);
+  padding-bottom: clamp(0.3rem, 1vw, 0.6rem);
+}
+
+.countdown-sign {
+  font-family: var(--font-count);
+  font-weight: 600;
+  font-size: clamp(1.8rem, 7vw, 3.6rem);
+  line-height: 1;
+  padding-bottom: 0.05em;
+}
+
+/* I millisecondi contano solo mentre l'asta non è ancora iniziata
+   (timer negativo): una volta live, sparisce insieme al suo separatore. */
+.countdown-unit--ms .countdown-value {
+  font-size: clamp(1rem, 3.6vw, 1.8rem);
+  font-weight: 500;
+  opacity: 0.72;
+  color: rgba(244, 247, 244, 0.92);
+  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+}
+
+.countdown-sep--ms {
+  font-size: clamp(1.2rem, 4.4vw, 2.2rem);
+}
+
+#countdown-block.is-live .countdown-unit--ms,
+#countdown-block.is-live .countdown-sep--ms {
+  display: none;
+}
+
+.countdown-label {
+  margin-top: 0.35rem;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: clamp(0.55rem, 1.3vw, 0.75rem);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(244, 247, 244, 0.45);
+}
+
+.countdown-sep {
+  font-family: var(--font-count);
+  font-weight: 500;
+  font-size: clamp(2.2rem, 10vw, 14.5rem);
+  line-height: 1;
+  color: var(--accent);
+  padding-bottom: clamp(0.6rem, 2vw, 1.6rem);
+  animation: sep-pulse 2.6s ease-in-out infinite;
+  text-shadow: 0 0 14px var(--accent-soft);
+}
+
+@keyframes sep-pulse {
+
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Stato "prima dell'asta": timer negativo, segno e cifre in rosso. */
+#countdown-block.is-before .countdown-sign,
+#countdown-block.is-before .countdown-value {
+  color: #ff5c5c;
+  text-shadow: 0 0 22px rgba(255, 92, 92, 0.35);
+}
+
+/* Stato "asta iniziata" (finché non scade): timer positivo, verde. */
+#countdown-block.is-live .countdown-sign,
+#countdown-block.is-live .countdown-value {
+  color: #3ddc84;
+  text-shadow: 0 0 22px rgba(61, 220, 132, 0.35);
+}
+
+body.is-live .light-beam {
+  animation-duration: 6s;
+}
+
+body.is-flash::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+  animation: flash-pop 0.55s ease-out forwards;
+}
+
+@keyframes flash-pop {
+  0% {
+    opacity: 0.75;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ------------------------------------------------------------
+   6. FRASI CINEMATOGRAFICHE + CLAIM
+   ------------------------------------------------------------ */
+.cinematic-line {
+  margin: 0 0 0.6rem;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: clamp(0.95rem, 2.2vw, 1.25rem);
+  line-height: 1.4;
+  color: rgba(244, 247, 244, 0.82);
+}
+
+.cinematic-line--sub {
+  margin-bottom: 1.6rem;
+  font-size: clamp(0.8rem, 1.7vw, 1rem);
+  color: rgba(244, 247, 244, 0.55);
+}
+
+.hero-claim {
+  margin: 0.4rem 0 2rem;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1rem, 2.6vw, 1.4rem);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--white);
+}
+
+/* ------------------------------------------------------------
+   8. SEZIONE "IL DESTINO È NELLE VOSTRE MANI" — CAMERA SUL CAMPO
+   ------------------------------------------------------------
+   .pitch-journey è un contenitore alto che crea la distanza di
+   scroll; .journey-sticky resta agganciato (position: sticky) per
+   tutta quell'altezza mentre journey.js calcola il progresso locale
+   e trasforma la camera. Vedi assets/js/journey.js per le fasi.
+   ------------------------------------------------------------ */
+.pitch-journey {
+  position: relative;
+  height: 600vh;
+  background: var(--black);
+}
+
+.journey-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(65% 55% at 50% 30%, rgba(157, 214, 255, 0.1), transparent 70%),
+    radial-gradient(120% 70% at 50% 100%, rgba(15, 51, 32, 0.5), transparent 60%),
+    var(--near-black);
+  --journey-rotateX: 58deg;
+  --journey-glow: 0.5;
+}
+
+/* Bagliore d'arrivo: la camera è davanti alla porta, luci al
+   massimo. Attivato da journey.js quando il progresso locale
+   supera ~0.92 (fase di arrivo finale). */
+.journey-sticky::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: radial-gradient(45% 40% at 50% 55%, rgba(244, 247, 244, 0.2), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-cinematic);
+}
+
+.journey-sticky.is-arrival::after {
+  opacity: 1;
+}
+
+.journey-backdrop {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.journey-haze {
+  position: absolute;
+  left: -20%;
+  width: 140%;
+  height: 40%;
+  background: radial-gradient(closest-side, rgba(244, 247, 244, 0.12), transparent 75%);
+  filter: blur(24px);
+}
+
+.journey-haze-1 {
+  top: 8%;
+  animation: haze-drift 50s ease-in-out infinite;
+}
+
+.journey-haze-2 {
+  bottom: 4%;
+  opacity: 0.7;
+  animation: haze-drift 64s ease-in-out infinite reverse;
+}
+
+.journey-scene {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1400px;
+}
+
+.journey-tilt {
+  position: absolute;
+  inset: 0;
+  transform: rotateX(var(--journey-rotateX));
+  transform-origin: 50% 62%;
+  will-change: transform;
+}
+
+.journey-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.field-stripe-a {
+  fill: var(--pitch-a);
+}
+
+.field-stripe-b {
+  fill: var(--pitch-b);
+}
+
+.field-line {
+  fill: none;
+  stroke: rgba(244, 247, 244, 0.72);
+  stroke-width: 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.field-dot {
+  fill: rgba(244, 247, 244, 0.72);
+}
+
+.field-goal {
+  fill: none;
+  stroke: rgba(244, 247, 244, 0.85);
+  stroke-width: 4;
+  vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 0 10px rgba(244, 247, 244, 0.35));
+}
+
+.journey-line {
+  fill: none;
+  stroke: var(--white);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  opacity: calc(0.55 + var(--journey-glow, 0.5) * 0.35);
+}
+
+.journey-glow {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 14;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  opacity: calc(var(--journey-glow, 0.5) * 0.4);
+  filter: blur(6px);
+}
+
+.journey-overlay {
+  position: relative;
+  z-index: 4;
+  width: 100%;
+  height: 100%;
+  padding: 0 1.5rem;
+  pointer-events: none;
+}
+
+.journey-stage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max-content;
+  max-width: min(30ch, calc(100vw - 3rem));
+  text-align: center;
+  opacity: 0;
+  transform: translate(-50%, calc(-50% + 22px)) scale(0.97);
+  transition: opacity 0.9s var(--ease-cinematic), transform 0.9s var(--ease-cinematic);
+}
+
+.journey-stage.is-active {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.journey-stage-index {
+  display: block;
+  margin-bottom: 0.6rem;
+  font-family: var(--font-count);
+  font-weight: 600;
+  font-size: 1.7rem;
+  color: var(--accent);
+  text-shadow: 0 0 16px var(--accent-soft);
+}
+
+.journey-stage h3 {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2rem, 6vw, 3.4rem);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--white);
+  text-shadow: 0 0 28px rgba(157, 214, 255, 0.2), 0 10px 30px rgba(0, 0, 0, 0.7);
+}
+
+.journey-stage p {
+  margin: 0;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: clamp(1rem, 2.2vw, 1.25rem);
+  color: rgba(244, 247, 244, 0.75);
+}
+
+.journey-bid-ticker {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: center;
+  margin-top: 1.2rem;
+}
+
+.journey-bid-ticker span {
+  padding: 0.25rem 0.85rem;
+  border: 1px solid var(--accent-soft);
+  border-radius: 999px;
+  background: rgba(240, 195, 82, 0.06);
+  font-family: var(--font-count);
+  font-weight: 600;
+  font-size: 1.15rem;
+  color: var(--accent);
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+.journey-stage[data-stage="rilanci"].is-active .journey-bid-ticker span {
+  animation: bid-pop 2.2s var(--ease-cinematic) infinite;
+}
+
+.journey-bid-ticker span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.journey-bid-ticker span:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.journey-bid-ticker span:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+.journey-bid-ticker span:nth-child(4) {
+  animation-delay: 0.9s;
+}
+
+.journey-bid-ticker span:nth-child(5) {
+  animation-delay: 1.2s;
+}
+
+@keyframes bid-pop {
+
+  0%,
+  8% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  22%,
+  70% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  85%,
+  100% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+/* Il fallback statico per prefers-reduced-motion (niente sticky,
+   niente camera) è definito in fondo al file, sezione 12. */
+
+/* ------------------------------------------------------------
+   8B. SEZIONE "LE FANTASQUADRE" — roster delle 10 squadre
+   ------------------------------------------------------------
+   Le card sono generate da assets/js/teams.js (array FANTASQUADRE,
+   shuffle Fisher-Yates una tantum) e rivelate con un
+   IntersectionObserver (classi .fx-reveal / .fx-card → is-in-view).
+   Il gradiente fra nome squadra e fantallenatore è un'unica
+   immagine (--identity-gradient) campionata a due posizioni
+   diverse: stesso sistema grafico su tutte le card.
+   ------------------------------------------------------------ */
+.fantasquadre {
+  position: relative;
+  padding: clamp(4rem, 10vh, 7rem) 1.5rem;
+  background:
+    radial-gradient(65% 55% at 50% 0%, rgba(157, 214, 255, 0.08), transparent 70%),
+    radial-gradient(120% 70% at 50% 100%, rgba(15, 51, 32, 0.45), transparent 60%),
+    repeating-linear-gradient(90deg, var(--pitch-a-dim) 0px, var(--pitch-a-dim) 64px, var(--pitch-b-dim) 64px, var(--pitch-b-dim) 128px),
+    var(--black);
+  overflow: hidden;
+}
+
+.fantasquadre::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--grey-line), transparent);
+}
+
+.fantasquadre-backdrop {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.fantasquadre-haze {
+  position: absolute;
+  left: -20%;
+  width: 140%;
+  height: 34%;
+  background: radial-gradient(closest-side, rgba(244, 247, 244, 0.1), transparent 75%);
+  filter: blur(30px);
+  opacity: 0.5;
+}
+
+.fantasquadre-haze-1 {
+  top: 4%;
+  animation: haze-drift 54s ease-in-out infinite;
+}
+
+.fantasquadre-haze-2 {
+  bottom: 6%;
+  opacity: 0.32;
+  animation: haze-drift 68s ease-in-out infinite reverse;
+}
+
+.fantasquadre-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 1180px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.fx-reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.8s var(--ease-cinematic), transform 0.8s var(--ease-cinematic);
+}
+
+.fx-reveal.is-in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fantasquadre-eyebrow {
+  margin: 0 0 0.6rem;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: clamp(0.7rem, 1.6vw, 0.95rem);
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: rgba(244, 247, 244, 0.55);
+}
+
+.fantasquadre-title {
+  margin: 0 0 0.7rem;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.2rem, 6.5vw, 4rem);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--white);
+  text-shadow: 0 0 28px rgba(157, 214, 255, 0.2), 0 10px 30px rgba(0, 0, 0, 0.65);
+}
+
+.fantasquadre-subtitle {
+  margin: 0 0 1.4rem;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: clamp(1rem, 2.2vw, 1.3rem);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-shadow: 0 0 20px var(--accent-soft);
+}
+
+.fantasquadre-lede {
+  margin: 0 auto;
+  max-width: 46ch;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  line-height: 1.6;
+  color: rgba(244, 247, 244, 0.7);
+}
+
+/* --- Griglia e card --- */
+.fantasquadre-grid {
+  --identity-gradient: linear-gradient(180deg, #ffffff 0%, #eef2ee 32%, #cdd6cf 58%, rgba(240, 195, 82, 0.92) 100%);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1.4rem, 2.4vw, 2.2rem);
+  margin: clamp(2.5rem, 5vw, 4rem) 0;
+  text-align: left;
+}
+
+/* 10 card su 3 colonne: l'ultima resta sola sulla quarta riga,
+   la centriamo sotto la colonna di mezzo invece di lasciarla a sx. */
+.fantasquadre-grid>.team-card:last-child {
+  grid-column: 2 / 3;
+}
+
+.team-card {
+  position: relative;
+  padding: clamp(1.7rem, 3vw, 2.4rem) clamp(1.5rem, 2.6vw, 2rem);
+  border-radius: 14px;
+  border: 1px solid var(--grey-line);
+  background: linear-gradient(160deg, rgba(244, 247, 244, 0.05), rgba(244, 247, 244, 0.015));
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+  transition:
+    opacity 0.9s var(--ease-cinematic),
+    transform 0.35s var(--ease-cinematic),
+    filter 0.9s var(--ease-cinematic),
+    border-color 0.35s ease,
+    box-shadow 0.35s ease,
+    background 0.35s ease;
+}
+
+.fx-card {
+  opacity: 0;
+  transform: translateY(40px);
+  filter: blur(8px);
+}
+
+.fx-card.is-in-view {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .team-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--accent-soft);
+    background: linear-gradient(160deg, rgba(244, 247, 244, 0.09), rgba(244, 247, 244, 0.025));
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45), 0 0 30px rgba(240, 195, 82, 0.14);
+  }
+}
+
+.team-card:focus-within {
+  border-color: var(--accent-soft);
+}
+
+.team-card-rule {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(180deg, var(--accent-soft), transparent 75%);
+  opacity: 0.6;
+  transition: opacity 0.35s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .team-card:hover .team-card-rule {
+    opacity: 1;
+  }
+}
+
+.team-card-index {
+  position: absolute;
+  top: 1.1rem;
+  right: 1.3rem;
+  font-family: var(--font-count);
+  font-weight: 600;
+  font-size: 1.15rem;
+  letter-spacing: 0.05em;
+  color: rgba(244, 247, 244, 0.28);
+  font-variant-numeric: tabular-nums;
+}
+
+.team-card-body {
+  position: relative;
+}
+
+.team-card-label {
+  margin: 0;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.62rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(244, 247, 244, 0.35);
+}
+
+.team-card-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.team-card-label-row {
+  margin: 0 0 0.6rem;
+  gap: 0.35rem;
+}
+
+/* --- Pulsante "copia" accanto a "Fantasquadra" --- */
+.copy-btn {
+  flex: 0 0 auto;
+  position: relative;
+  width: 0.75rem;
+  height: 0.75rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: rgba(244, 247, 244, 0.4);
+  cursor: pointer;
+  transition: color 0.25s ease, transform 0.15s ease;
+}
+
+.copy-btn:hover,
+.copy-btn:focus-visible {
+  color: rgba(244, 247, 244, 0.85);
+}
+
+.copy-btn:active {
+  transform: scale(0.88);
+}
+
+.copy-btn.is-copied {
+  color: #3ddc84;
+}
+
+.copy-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.copy-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.copy-btn .icon-check {
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+.copy-btn.is-copied .icon-copy {
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+.copy-btn.is-copied .icon-check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.team-card-name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.3rem, 2.4vw, 1.8rem);
+  line-height: 1.1;
+  letter-spacing: 0.015em;
+  text-transform: uppercase;
+  background-image: var(--identity-gradient);
+  background-size: 100% 260%;
+  background-position: 0 0%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 16px rgba(244, 247, 244, 0.16));
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.6s var(--ease-cinematic), transform 0.6s var(--ease-cinematic), filter 0.35s ease;
+}
+
+/* Sequenza interna alla card: il nome squadra diventa nitido per
+   primo, il fantallenatore emerge poco dopo (transition-delay). */
+.fx-card.is-in-view .team-card-name {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.1s;
+}
+
+.fx-card.is-in-view .team-card-manager {
+  opacity: 0.92;
+  transform: translateY(0);
+  transition-delay: 0.38s;
+}
+
+.team-card-divider {
+  display: block;
+  width: clamp(32px, 8vw, 56px);
+  height: 2px;
+  margin: 0.7rem 0 0.65rem;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  box-shadow: 0 0 10px var(--accent-soft);
+  transition: box-shadow 0.35s ease;
+}
+
+.team-card-manager {
+  margin: 0;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+  letter-spacing: 0.03em;
+  background-image: var(--identity-gradient);
+  background-size: 100% 260%;
+  background-position: 0 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.6s var(--ease-cinematic), transform 0.6s var(--ease-cinematic);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .team-card:hover .team-card-name {
+    filter: drop-shadow(0 0 26px rgba(244, 247, 244, 0.3)) drop-shadow(0 0 42px rgba(157, 214, 255, 0.18));
+  }
+
+  .team-card:hover .team-card-divider {
+    box-shadow: 0 0 18px var(--accent-soft);
+  }
+}
+
+/* --- CTA verso la pagina ufficiale delle squadre --- */
+.fantasquadre-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: clamp(1rem, 3vw, 1.6rem);
+  padding: 0.85rem 1.8rem;
+  border-radius: 999px;
+  border: 1px solid var(--accent-soft);
+  background: rgba(240, 195, 82, 0.08);
+  color: var(--accent);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  backdrop-filter: blur(6px);
+  transition: border-color 0.3s ease, color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.fantasquadre-cta-arrow {
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .fantasquadre-cta:hover {
+    border-color: var(--accent);
+    background: rgba(240, 195, 82, 0.16);
+    color: var(--white);
+    box-shadow: 0 0 26px rgba(240, 195, 82, 0.25);
+    transform: translateY(-2px);
+  }
+
+  .fantasquadre-cta:hover .fantasquadre-cta-arrow {
+    transform: translateX(4px);
+  }
+}
+
+.fantasquadre-cta:focus-visible {
+  border-color: var(--accent);
+  color: var(--white);
+}
+
+/* ------------------------------------------------------------
+   9. SEZIONE "IL PROCLAMA DELLA LEGA FANTAMAZZO"
+   ------------------------------------------------------------ */
+.manifesto {
+  position: relative;
+  padding: clamp(4rem, 10vh, 7rem) 1.5rem;
+  background:
+    radial-gradient(70% 50% at 50% 0%, rgba(15, 51, 32, 0.28), transparent 70%),
+    repeating-linear-gradient(90deg, var(--pitch-a-dim) 0px, var(--pitch-a-dim) 64px, var(--pitch-b-dim) 64px, var(--pitch-b-dim) 128px),
+    var(--black);
+  overflow: hidden;
+}
+
+.manifesto::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  z-index: 1;
+  background: linear-gradient(90deg, transparent, var(--grey-line), transparent);
+}
+
+/* Sagoma della porta, appena percettibile: il campo che la camera
+   ha attraversato nel viaggio è arrivato fin qui, sotto al proclama. */
+.manifesto::after {
+  content: "";
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  width: min(46%, 420px);
+  aspect-ratio: 2 / 1;
+  transform: translateX(-50%);
+  border: 3px solid rgba(244, 247, 244, 0.12);
+  border-bottom: none;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.manifesto-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 62ch;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.manifesto-inner>* {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.8s var(--ease-cinematic), transform 0.8s var(--ease-cinematic);
+}
+
+.manifesto-inner>*.is-in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.manifesto-inner p.manifesto-eyebrow {
+  margin: 0 0 0.6rem;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: clamp(0.7rem, 1.6vw, 0.95rem);
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: rgba(244, 247, 244, 0.55);
+}
+
+.manifesto-title {
+  margin: 0 0 2.6rem;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.9rem, 5.5vw, 3.2rem);
+  line-height: 1.1;
+  text-transform: uppercase;
+  color: var(--white);
+  text-shadow: 0 0 24px rgba(157, 214, 255, 0.16), 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+
+.manifesto-inner p {
+  margin: 0 0 1.5rem;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  line-height: 1.55;
+  color: rgba(244, 247, 244, 0.72);
+}
+
+.manifesto-inner p.manifesto-strong {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.2rem, 2.6vw, 1.6rem);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--white);
+}
+
+.manifesto-inner p.manifesto-shout {
+  margin: 2.2rem 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.4rem, 3.6vw, 2.1rem);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--accent);
+  text-shadow: 0 0 26px var(--accent-soft);
+}
+
+.manifesto-inner p.manifesto-fire {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: clamp(1.15rem, 2.2vw, 1.3rem);
+  letter-spacing: 0.02em;
+  color: var(--accent);
+}
+
+.manifesto-inner p.manifesto-bid {
+  display: inline-block;
+  margin: 0 0 1.2rem;
+  padding: 0.3rem 1.1rem;
+  border: 1px solid var(--accent-soft);
+  border-radius: 999px;
+  font-family: var(--font-count);
+  font-weight: 600;
+  font-size: clamp(1.3rem, 3vw, 1.8rem);
+  color: var(--accent);
+  background: rgba(240, 195, 82, 0.06);
+}
+
+.manifesto-inner blockquote {
+  margin: 0 0 1.6rem;
+  padding: 0.2rem 0 0.2rem 1.2rem;
+  border-left: 3px solid var(--accent-soft);
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: clamp(0.95rem, 1.9vw, 1.1rem);
+  line-height: 1.6;
+  color: rgba(244, 247, 244, 0.5);
+  text-align: left;
+}
+
+.manifesto-inner p.manifesto-final {
+  margin-top: 2.4rem;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2rem, 6vw, 3.4rem);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--accent);
+  text-shadow: 0 0 34px var(--accent-soft), 0 0 60px rgba(240, 195, 82, 0.25);
+}
+
+/* ------------------------------------------------------------
+   9B. SEZIONE FINALE — "IL DESTINO VI ASPETTA" / "L'ASTA È INIZIATA"
+   ------------------------------------------------------------
+   Ultimo battito narrativo prima del footer: quale delle due righe
+   sia visibile dipende solo da body.is-live, già gestito da
+   countdown.js in handleEventStarted(). Nessuna nuova logica JS.
+   ------------------------------------------------------------ */
+.final-shot {
+  position: relative;
+  padding: clamp(3.5rem, 10vh, 6rem) 1.5rem;
+  text-align: center;
+  overflow: hidden;
+  background:
+    radial-gradient(60% 60% at 50% 40%, rgba(240, 195, 82, 0.07), transparent 70%),
+    repeating-linear-gradient(90deg, var(--pitch-a-dim) 0px, var(--pitch-a-dim) 64px, var(--pitch-b-dim) 64px, var(--pitch-b-dim) 128px),
+    var(--black);
+}
+
+.final-shot-pre {
+  margin: 0 0 0.8rem;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: clamp(0.7rem, 1.6vw, 0.95rem);
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: rgba(244, 247, 244, 0.5);
+}
+
+.final-shot-line {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2rem, 6vw, 3.6rem);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--white);
+  text-shadow: 0 0 30px rgba(157, 214, 255, 0.2), 0 10px 30px rgba(0, 0, 0, 0.7);
+}
+
+.final-shot-line--live {
+  display: none;
+  color: var(--accent);
+  text-shadow: 0 0 34px var(--accent-soft), 0 0 60px rgba(240, 195, 82, 0.3);
+}
+
+body.is-live .final-shot-line--waiting {
+  display: none;
+}
+
+body.is-live .final-shot-line--live {
+  display: block;
+}
+
+/* ------------------------------------------------------------
+   10. FOOTER — LA LINEA DI FONDO DELLO STESSO CAMPO
+   ------------------------------------------------------------ */
+.site-footer {
+  position: relative;
+  padding: 2.4rem 1.5rem 1.8rem;
+  text-align: center;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(90deg, var(--pitch-a-dim) 0px, var(--pitch-a-dim) 64px, var(--pitch-b-dim) 64px, var(--pitch-b-dim) 128px),
+    var(--near-black);
+}
+
+.site-footer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(4, 7, 10, 0.35), rgba(4, 7, 10, 0.9) 60%);
+  pointer-events: none;
+}
+
+.site-footer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 12%;
+  right: 12%;
+  height: 2px;
+  background: var(--white);
+  opacity: 0.75;
+  box-shadow: 0 0 22px rgba(244, 247, 244, 0.5);
+  pointer-events: none;
+}
+
+.site-footer p {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(244, 247, 244, 0.5);
+}
+
+/* ------------------------------------------------------------
+   10B. NAVIGAZIONE TRA SEZIONI
+   ------------------------------------------------------------
+   Due pulsanti fissi che valgono per l'intera pagina: "successiva"
+   in basso a destra, "precedente" in alto a destra (nascosto sulla
+   prima sezione). page-nav.js decide quando nascondere/mostrare
+   in base alla sezione attualmente in vista.
+   ------------------------------------------------------------ */
+.page-nav-btn {
+  position: fixed;
+  right: clamp(1rem, 4vw, 2.2rem);
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(2.5rem, 5vw, 3.1rem);
+  height: clamp(2.5rem, 5vw, 3.1rem);
+  border-radius: 50%;
+  border: 1px solid rgba(244, 247, 244, 0.25);
+  background: rgba(4, 7, 10, 0.55);
+  backdrop-filter: blur(6px);
+  color: var(--white);
+  cursor: pointer;
+  opacity: 0.85;
+  transition: opacity 0.35s var(--ease-cinematic), transform 0.35s var(--ease-cinematic), background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.page-nav-btn svg {
+  width: 44%;
+  height: 44%;
+  fill: currentColor;
+}
+
+.page-nav-btn:hover,
+.page-nav-btn:focus-visible {
+  opacity: 1;
+  background: rgba(240, 195, 82, 0.16);
+  border-color: var(--accent-soft);
+}
+
+.page-nav-btn--prev {
+  top: clamp(1rem, 4vh, 2rem);
+}
+
+.page-nav-btn--next {
+  bottom: clamp(1rem, 4vh, 2rem);
+}
+
+.page-nav-btn.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.page-nav-btn--prev.is-hidden {
+  transform: translateY(-10px);
+}
+
+.page-nav-btn--next.is-hidden {
+  transform: translateY(10px);
+}
+
+/* ------------------------------------------------------------
+   11. RESPONSIVE
+   ------------------------------------------------------------ */
+@media (max-width: 1024px) {
+  :root {
+    --parallax-range: 70px;
+  }
+
+  /* Tablet: griglia squadre a 2 colonne, nessuna card orfana da centrare. */
+  .fantasquadre-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .fantasquadre-grid>.team-card:last-child {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .pitch-wrap {
+    width: 220%;
+    height: 40%;
+  }
+
+  /* Viaggio più corto e meno "pesante": meno schermate di scroll,
+     meno blur/glow, la camera resta comunque agganciata alla linea. */
+  .pitch-journey {
+    height: 380vh;
+  }
+
+  .journey-scene {
+    perspective: 900px;
+  }
+
+  .journey-glow {
+    filter: blur(3px);
+  }
+
+  .journey-haze {
+    filter: blur(14px);
+  }
+
+  .journey-stage {
+    max-width: 26ch;
+  }
+
+  /* Mobile: una colonna larga, effetti d'ingresso più leggeri. */
+  .fantasquadre-grid {
+    grid-template-columns: 1fr;
+    gap: 1.1rem;
+  }
+
+  .fantasquadre-grid>.team-card:last-child {
+    grid-column: auto;
+  }
+
+  /* Su mobile 10 card con backdrop-filter simultanei sono costose
+     (il browser deve ricampionare e sfocare lo sfondo dietro ad
+     ognuna, ad ogni frame di scroll). L'effetto "vetro" resta,
+     ottenuto con un pannello semitrasparente più opaco invece che
+     con una vera sfocatura dello sfondo. */
+  .team-card {
+    padding: 1.5rem 1.3rem;
+    background: linear-gradient(160deg, rgba(20, 28, 22, 0.72), rgba(7, 13, 10, 0.6));
+    backdrop-filter: none;
+  }
+
+  .fx-card {
+    transform: translateY(22px);
+    filter: blur(4px);
+  }
+
+  .fantasquadre-haze {
+    filter: blur(18px);
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --parallax-range: 30px;
+  }
+
+  /* Il timer resta SEMPRE su un'unica riga, anche su mobile: niente
+     wrap. --cd-fs è la taglia di riferimento delle cifre principali:
+     il clamp() qui sotto è solo il fallback (usato finché JS non ha
+     ancora calcolato una misura, o se JS è disabilitato); appena
+     possibile assets/js/countdown-fit.js la sovrascrive inline per
+     riempire il 100% della larghezza disponibile (bordo sx/dx dato
+     dal padding di .hero-content), senza mai andare in overflow. */
+  .countdown--hero {
+    --cd-fs: clamp(2.4rem, 13vw, 4.3rem);
+  }
+
+  .countdown {
+    flex-wrap: nowrap;
+    gap: clamp(0.1rem, 1.6vw, 0.4rem);
+    margin-bottom: 1.2rem;
+  }
+
+  .countdown.is-measuring {
+    width: max-content;
+  }
+
+  .countdown-unit {
+    min-width: 0;
+  }
+
+  .countdown--hero .countdown-value {
+    font-size: var(--cd-fs);
+  }
+
+  .countdown-sign {
+    font-size: var(--cd-fs);
+  }
+
+  .countdown--hero .countdown-sep {
+    font-size: calc(var(--cd-fs) * 0.75);
+    padding-bottom: clamp(0.3rem, 1.4vw, 0.6rem);
+  }
+
+  .countdown-sep--ms {
+    font-size: calc(var(--cd-fs) * 0.45);
+  }
+
+  .countdown-unit--ms .countdown-value {
+    font-size: calc(var(--cd-fs) * 0.4);
+  }
+
+  .countdown-label {
+    letter-spacing: 0.16em;
+    font-size: clamp(0.42rem, 1.6vw, 0.6rem);
+  }
+
+  .auction-status {
+    margin-bottom: 1.6rem;
+  }
+
+  .hero-subtitle {
+    margin-bottom: 0.8rem;
+  }
+
+  .hero-content {
+    padding-top: 4vh;
+    padding-left: 0.85rem;
+    padding-right: 0.85rem;
+  }
+}
+
+/* ------------------------------------------------------------
+   12. ACCESSIBILITÀ — RIDUZIONE MOVIMENTO
+   ------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .grain-overlay,
+  .light-beam,
+  .haze,
+  .fantasquadre-haze,
+  .countdown-sep,
+  #curtain,
+  .layer,
+  .reveal-step,
+  .manifesto-inner>*,
+  .fx-reveal,
+  .fx-card,
+  .team-card,
+  .team-card-name,
+  .team-card-manager,
+  .page-nav-btn,
+  .copy-icon {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .layer {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .reveal-step {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .manifesto-inner>* {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  #curtain {
+    opacity: 0 !important;
+  }
+
+  #intro-ball {
+    display: none !important;
+  }
+
+  .countdown-value.is-changed {
+    animation: none !important;
+  }
+
+  body.is-flash::after {
+    display: none;
+  }
+
+  /* Journey: niente sticky/camera, le tappe sono impilate e
+     leggibili, con un reveal semplice via IntersectionObserver
+     (vedi initJourneyStatic in journey.js). */
+  .pitch-journey {
+    height: auto;
+  }
+
+  .journey-sticky {
+    position: relative;
+    height: auto;
+    flex-direction: column;
+    gap: 3rem;
+    padding: clamp(4rem, 10vh, 7rem) 1.5rem;
+  }
+
+  .journey-backdrop,
+  .journey-scene {
+    display: none;
+  }
+
+  .journey-overlay {
+    position: static;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+    pointer-events: auto;
+  }
+
+  .journey-stage {
+    position: static;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+    animation: none !important;
+  }
+
+  .journey-stage.is-in-view {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .journey-bid-ticker span {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Fantasquadre: card subito visibili e nitide, niente blur/lift. */
+  .fx-reveal,
+  .fx-card {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  .team-card-name,
+  .team-card-manager {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .team-card-manager {
+    opacity: 0.92 !important;
+  }
+}
