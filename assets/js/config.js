@@ -22,7 +22,7 @@ const EVENT_DATE = "2026-09-07T21:10:00";
 // si comporta come prima (sparisce dopo AUCTION_VISIBLE_AFTER_START_HOURS).
 // Una volta valorizzata, appena raggiunta mostra lo stato "asta terminata"
 // (durata finale ore/minuti + augurio) al posto della sparizione.
-const AUCTION_END_DATE = "2026-09-08T02:00:00";
+const AUCTION_END_DATE = "2026-09-08T01:56:30";
 
 // Stagione del campionato che l'asta apre, mostrata sotto l'augurio
 // di buon campionato nello stato "asta terminata". L'anno prossimo
