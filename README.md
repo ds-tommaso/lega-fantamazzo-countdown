@@ -84,7 +84,7 @@ rallenta o perde frame.
 ## Versione degli asset (cache-busting)
 
 Ogni foglio di stile e script è referenziato in `index.html` con una query string di
-versione, es. `assets/js/countdown.js?v2026.0.3`. Quando si modifica un file in `assets/`,
+versione, es. `assets/js/countdown.js?v2026.09.07.003`. Quando si modifica un file in `assets/`,
 va aggiornata la versione su **tutte** le occorrenze in `index.html` (CSS e ogni
 `<script>`), così i visitatori con una copia già in cache ricevono sempre l'ultima
 versione. La pagina si ricarica comunque da sola ogni 2 minuti (`main.js`), a supporto di
