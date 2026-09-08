@@ -4,37 +4,76 @@
    LEGA FANTAMAZZO — L'ASTA
    config.js — configurazione e stato condiviso.
 
-   Caricato per PRIMO: le costanti e le variabili definite qui
-   (EVENT_DATE, dom, ecc.) sono usate da tutti gli altri file in
-   assets/js/. Niente moduli/bundler: gli script classici caricati
-   in sequenza in index.html condividono lo stesso scope globale.
+   Caricato per PRIMO: LEAGUE_CONFIG, le costanti e le variabili
+   definite qui (targetTime, dom, ecc.) sono usate da tutti gli
+   altri file in assets/js/. Niente moduli/bundler: gli script
+   classici caricati in sequenza in index.html condividono lo
+   stesso scope globale.
    ============================================================ */
 
 // ========================================
-// CONFIGURAZIONE ASTA
-// Modifica SOLO queste date/ore.
-// Formato: "AAAA-MM-GGTHH:MM:SS" (senza "Z": viene interpretata
-// come ora locale del browser di chi visita la pagina).
+// CONFIGURAZIONE DI LEGA
+// Unica fonte di verità per i dati dinamici della lega: nome/
+// stagione, date dell'asta, elenco squadre e tappe del percorso.
+// Per una nuova stagione/lega basta modificare questo oggetto.
 // ========================================
-const EVENT_DATE = "2026-09-07T21:10:00";
+const LEAGUE_CONFIG = {
+  league: {
+    name: "Lega Fantamazzo",
+    // Stagione del campionato che l'asta apre, mostrata sotto
+    // l'augurio di buon campionato nello stato "asta terminata".
+    // L'anno prossimo basta aggiornare questa riga.
+    season: "2026/27",
+  },
 
-// Data/ora di fine asta. Finché non è nota si lascia "": il countdown
-// si comporta come prima (sparisce dopo AUCTION_VISIBLE_AFTER_START_HOURS).
-// Una volta valorizzata, appena raggiunta mostra lo stato "asta terminata"
-// (durata finale ore/minuti + augurio) al posto della sparizione.
-const AUCTION_END_DATE = "2026-09-08T01:56:30";
+  countdown: {
+    // Formato: "AAAA-MM-GGTHH:MM:SS" (senza "Z": viene interpretata
+    // come ora locale del browser di chi visita la pagina).
+    eventDate: "2026-09-07T21:10:00",
 
-// Stagione del campionato che l'asta apre, mostrata sotto l'augurio
-// di buon campionato nello stato "asta terminata". L'anno prossimo
-// basta aggiornare questa riga (nessuna modifica all'HTML).
-const AUCTION_SEASON = "2026/27";
+    // Data/ora di fine asta. Finché non è nota si lascia "": il
+    // countdown si comporta come prima (sparisce dopo
+    // visibleAfterStartHours). Una volta valorizzata, appena
+    // raggiunta mostra lo stato "asta terminata" (durata finale
+    // ore/minuti + augurio) al posto della sparizione.
+    auctionEndDate: "2026-09-08T01:56:30",
 
-// Per quante ore dopo l'inizio restare visibile il countdown
-// (stato "L'asta è iniziata" col segno verde). Dopo, il blocco sparisce.
-// Ignorato quando AUCTION_END_DATE è valorizzata (vedi sopra).
-const AUCTION_VISIBLE_AFTER_START_HOURS = 6;
+    // Per quante ore dopo l'inizio restare visibile il countdown
+    // (stato "L'asta è iniziata" col segno verde). Dopo, il blocco
+    // sparisce. Ignorato quando auctionEndDate è valorizzata.
+    visibleAfterStartHours: 6,
+  },
 
-// Altre impostazioni regolabili
+  // Elenco squadre e presidenti mostrati in "Le Fantasquadre".
+  // Per aggiungere/modificare una squadra, basta editare questo array.
+  teams: [
+    { team: "Torellinho 2025", manager: "Giuseppe Chiarolla" },
+    { team: "Co Molli Cosenza", manager: "Giuseppe Giannini" },
+    { team: "Hunting Club FC 1996", manager: "Vito Ricciardi" },
+    { team: "Bene ma non Benito FC", manager: "Pietro Gallo" },
+    { team: "Cleveland Monsters", manager: "Massimiliano Depalma" },
+    { team: "Spera Ebbasta", manager: "Flavio Lattarulo, Gigi" },
+    { team: "Pdor Saint-Germain", manager: "Antonio Morgante" },
+    { team: "FC Internazionale Ingiocabili", manager: "Francesco Campanella" },
+    { team: "El Loco Picci", manager: "Fabrizio Giannini" },
+    { team: "APresto UniFG", manager: "Depalma C." },
+  ],
+
+  // Tappe della timeline/percorso cinematografico (sezione
+  // #pitch-journey): chiave (usata anche come data-stage), titolo
+  // e testo di ciascuna tappa, nell'ordine in cui vengono attraversate.
+  journey: {
+    stages: [
+      { key: "strategia", title: "Strategia", text: "Ogni credito conta." },
+      { key: "rilanci", title: "Rilanci", text: "Un solo errore può cambiare la stagione." },
+      { key: "gloria", title: "Gloria", text: "Uno solo salirà sul trono." },
+    ],
+  },
+};
+
+// ========================================
+// Altre impostazioni regolabili (tuning tecnico, non dati di lega)
+// ========================================
 const PARTICLE_COUNT_DESKTOP = 46;
 const PARTICLE_COUNT_MOBILE = 18;
 const MOBILE_BREAKPOINT = 768;
@@ -46,9 +85,9 @@ const INTRO_CURTAIN_OPEN_AT = 950; // ms: apertura sipario dopo il pallone (sost
 // ------------------------------------------------------------
 // Stato condiviso e riferimenti DOM
 // ------------------------------------------------------------
-const targetTime = new Date(EVENT_DATE).getTime();
-const endTime = AUCTION_END_DATE ? new Date(AUCTION_END_DATE).getTime() : null;
-const AUCTION_VISIBLE_AFTER_START_MS = AUCTION_VISIBLE_AFTER_START_HOURS * 3600000;
+const targetTime = new Date(LEAGUE_CONFIG.countdown.eventDate).getTime();
+const endTime = LEAGUE_CONFIG.countdown.auctionEndDate ? new Date(LEAGUE_CONFIG.countdown.auctionEndDate).getTime() : null;
+const AUCTION_VISIBLE_AFTER_START_MS = LEAGUE_CONFIG.countdown.visibleAfterStartHours * 3600000;
 
 let eventStarted = false;
 let eventExpired = false;

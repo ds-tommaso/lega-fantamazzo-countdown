@@ -3,10 +3,12 @@
 /* ============================================================
    LEGA FANTAMAZZO — L'ASTA
    main.js — bootstrap. Caricato per ULTIMO: a questo punto tutte
-   le funzioni definite negli altri file (config.js, perf.js,
-   countdown.js, intro.js, parallax.js, journey.js, teams.js,
-   particles.js, scroll-reveal.js, page-nav.js, countdown-fit.js)
-   sono già disponibili nello stesso scope globale.
+   le funzioni definite negli altri file (config.js, effects/perf.js,
+   modules/countdown.js, modules/intro.js, effects/parallax.js,
+   modules/journey.js, modules/teams.js, effects/particles.js,
+   effects/scroll-reveal.js, modules/page-nav.js,
+   modules/countdown-fit.js) sono già disponibili nello stesso
+   scope globale.
    ============================================================ */
 
 /**

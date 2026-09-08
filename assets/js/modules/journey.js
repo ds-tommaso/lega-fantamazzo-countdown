@@ -60,12 +60,42 @@ function clamp01(v) {
 }
 
 /**
+ * Genera le card delle tappe (.journey-stage) dentro #journey-overlay
+ * a partire da LEAGUE_CONFIG.journey.stages, nello stesso ordine e con
+ * lo stesso markup che prima era scritto a mano in index.html.
+ */
+function renderJourneyStages() {
+  const overlay = document.getElementById("journey-overlay");
+  if (!overlay) return;
+
+  const fragment = document.createDocumentFragment();
+
+  LEAGUE_CONFIG.journey.stages.forEach((stage, i) => {
+    const article = document.createElement("article");
+    article.className = "journey-stage";
+    article.dataset.stage = stage.key;
+
+    const index = String(i + 1).padStart(2, "0");
+    article.innerHTML =
+      '<span class="journey-stage-index" aria-hidden="true">' + index + "</span>" +
+      "<h3>" + stage.title + "</h3>" +
+      "<p>" + stage.text + "</p>";
+
+    fragment.appendChild(article);
+  });
+
+  overlay.appendChild(fragment);
+}
+
+/**
  * Inizializza la sezione journey: su desktop/mobile con movimento
  * consentito aggancia una camera SVG allo scroll; con
  * prefers-reduced-motion mostra le tappe già in vista, impilate,
  * con un reveal semplice (nessun aggancio, nessun rAF).
  */
 function initJourney() {
+  renderJourneyStages();
+
   const section = document.getElementById("pitch-journey");
   const sticky = document.getElementById("journey-sticky");
   const cameraGroup = document.getElementById("journey-camera");

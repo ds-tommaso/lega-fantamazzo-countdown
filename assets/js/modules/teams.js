@@ -5,21 +5,11 @@
    teams.js — sezione "Le Fantasquadre": genera le card da un
    array dati, mescola l'ordine una sola volta al caricamento
    (Fisher-Yates) e le rivela con un IntersectionObserver.
-   Per aggiungere/modificare una squadra, basta editare FANTASQUADRE.
+   Per aggiungere/modificare una squadra, basta editare LEAGUE_CONFIG.teams
+   in assets/js/config.js.
    ============================================================ */
 
-const FANTASQUADRE = [
-  { team: "Torellinho 2025", manager: "Giuseppe Chiarolla" },
-  { team: "Co Molli Cosenza", manager: "Giuseppe Giannini" },
-  { team: "Hunting Club FC 1996", manager: "Vito Ricciardi" },
-  { team: "Bene ma non Benito FC", manager: "Pietro Gallo" },
-  { team: "Cleveland Monsters", manager: "Massimiliano Depalma" },
-  { team: "Spera Ebbasta", manager: "Flavio Lattarulo, Gigi" },
-  { team: "Pdor Saint-Germain", manager: "Antonio Morgante" },
-  { team: "FC Internazionale Ingiocabili", manager: "Francesco Campanella" },
-  { team: "El Loco Picci", manager: "Fabrizio Giannini" },
-  { team: "APresto UniFG", manager: "Depalma C." },
-];
+const FANTASQUADRE = LEAGUE_CONFIG.teams;
 
 const COPY_ICON_SVG =
   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
@@ -31,6 +21,32 @@ const CHECK_ICON_SVG =
   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
   '<polyline points="20 6 9 17 4 12"></polyline>' +
   "</svg>";
+
+const NUMERI_ITALIANI = [
+  "zero", "uno", "due", "tre", "quattro", "cinque", "sei", "sette", "otto", "nove",
+  "dieci", "undici", "dodici", "tredici", "quattordici", "quindici", "sedici",
+  "diciassette", "diciotto", "diciannove", "venti",
+];
+
+/**
+ * Converte un numero in parola italiana (0-20); oltre, usa la cifra.
+ */
+function numeroInParole(n) {
+  return NUMERI_ITALIANI[n] || String(n);
+}
+
+/**
+ * Aggiorna il testo "N squadre. N strategie..." con il conteggio
+ * effettivo di FANTASQUADRE, così il claim resta sempre corretto.
+ */
+function updateFantasquadreLede() {
+  const lede = document.getElementById("fantasquadre-lede");
+  if (!lede) return;
+
+  const parola = numeroInParole(FANTASQUADRE.length);
+  const capitalizzata = parola.charAt(0).toUpperCase() + parola.slice(1);
+  lede.textContent = capitalizzata + " squadre. " + capitalizzata + " strategie. Un solo trono.";
+}
 
 /**
  * Fisher-Yates in place. Eseguito una sola volta al caricamento:
@@ -156,6 +172,8 @@ function flashCopied(button) {
 function initFantasquadre() {
   const grid = document.getElementById("fantasquadre-grid");
   if (!grid) return;
+
+  updateFantasquadreLede();
 
   const shuffled = shuffleFisherYates(FANTASQUADRE.slice());
   const fragment = document.createDocumentFragment();

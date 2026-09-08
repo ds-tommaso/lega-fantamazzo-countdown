@@ -11,10 +11,10 @@
    - "live"    → l'asta è iniziata da meno di AUCTION_VISIBLE_AFTER_START_MS
                  (e non è ancora stata raggiunta endTime, se nota):
                  timer positivo (segno verde) che conta il tempo trascorso
-   - "ended"   → è nota AUCTION_END_DATE ed è stata raggiunta: mostra la
-                 durata finale (ore/minuti/secondi), le date di inizio/
-                 fine e l'augurio di buon campionato
-   - "expired" → fallback quando AUCTION_END_DATE non è nota: oltre la
+   - "ended"   → è nota LEAGUE_CONFIG.countdown.auctionEndDate ed è stata
+                 raggiunta: mostra la durata finale (ore/minuti/secondi),
+                 le date di inizio/fine e l'augurio di buon campionato
+   - "expired" → fallback quando auctionEndDate non è nota: oltre la
                  soglia AUCTION_VISIBLE_AFTER_START_MS il blocco sparisce
    ============================================================ */
 
@@ -50,8 +50,9 @@ function formatUnit(value, length = 2) {
 }
 
 /**
- * Formatta un timestamp come data/ora locale "GG/MM HH:MM"
- * (stessa ora locale con cui è interpretato EVENT_DATE in config.js).
+ * Formatta un timestamp come data/ora locale "GG/MM HH:MM" (stessa
+ * ora locale con cui è interpretato LEAGUE_CONFIG.countdown.eventDate
+ * in config.js).
  */
 function formatDateTime(ms) {
   const d = new Date(ms);
@@ -229,7 +230,7 @@ function handleEventExpired() {
 }
 
 /**
- * Quando è nota AUCTION_END_DATE e viene raggiunta, l'asta risulta
+ * Quando è nota LEAGUE_CONFIG.countdown.auctionEndDate e viene raggiunta, l'asta risulta
  * "terminata": invece di sparire (come nello stato "expired"), il
  * blocco mostra la durata finale (ore/minuti/secondi, fissa: non
  * conta più), le date di inizio/fine e un augurio di buon campionato.
@@ -255,10 +256,10 @@ function handleEventEnded(durationMs) {
 
   const message = "Buon campionato a tutti!";
   dom.endedMessage.textContent = message;
-  dom.seasonMessage.textContent = `🏆 ${AUCTION_SEASON} 🏆`;
+  dom.seasonMessage.textContent = `🏆 ${LEAGUE_CONFIG.league.season} 🏆`;
   dom.liveRegion.textContent =
     `L'asta è terminata dopo ${hours} ore, ${minutes} minuti e ${seconds} secondi, ` +
-    `dal ${startLabel} al ${endLabel}. ${message} ${AUCTION_SEASON}`;
+    `dal ${startLabel} al ${endLabel}. ${message} ${LEAGUE_CONFIG.league.season}`;
 
   // Senza segno/ms la riga è ancora più corta: ricalcola la taglia
   // su mobile (vedi handleEventStarted()).
