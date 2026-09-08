@@ -24,6 +24,11 @@ const EVENT_DATE = "2026-09-07T21:10:00";
 // (durata finale ore/minuti + augurio) al posto della sparizione.
 const AUCTION_END_DATE = "2026-09-08T02:00:00";
 
+// Stagione del campionato che l'asta apre, mostrata sotto l'augurio
+// di buon campionato nello stato "asta terminata". L'anno prossimo
+// basta aggiornare questa riga (nessuna modifica all'HTML).
+const AUCTION_SEASON = "2026/27";
+
 // Per quante ore dopo l'inizio restare visibile il countdown
 // (stato "L'asta è iniziata" col segno verde). Dopo, il blocco sparisce.
 // Ignorato quando AUCTION_END_DATE è valorizzata (vedi sopra).
@@ -69,4 +74,5 @@ function cacheDom() {
   dom.liveRegion = document.getElementById("countdown-live");
   dom.datesMessage = document.getElementById("auction-dates-message");
   dom.endedMessage = document.getElementById("auction-ended-message");
+  dom.seasonMessage = document.getElementById("auction-season-message");
 }

@@ -255,9 +255,10 @@ function handleEventEnded(durationMs) {
 
   const message = "Buon campionato a tutti! 🏆";
   dom.endedMessage.textContent = message;
+  dom.seasonMessage.textContent = AUCTION_SEASON;
   dom.liveRegion.textContent =
     `L'asta è terminata dopo ${hours} ore, ${minutes} minuti e ${seconds} secondi, ` +
-    `dal ${startLabel} al ${endLabel}. ${message}`;
+    `dal ${startLabel} al ${endLabel}. ${message} ${AUCTION_SEASON}`;
 
   // Senza segno/ms la riga è ancora più corta: ricalcola la taglia
   // su mobile (vedi handleEventStarted()).

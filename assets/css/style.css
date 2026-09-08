@@ -656,7 +656,8 @@ body.curtain-open #curtain {
 }
 
 .auction-dates-message,
-.auction-ended-message {
+.auction-ended-message,
+.auction-season-message {
   display: none;
   margin: 0.6rem 0 0;
   font-family: var(--font-body);
@@ -675,8 +676,17 @@ body.curtain-open #curtain {
   text-shadow: 0 0 22px var(--accent-soft);
 }
 
+.auction-season-message {
+  margin-top: 0.2rem;
+  font-size: clamp(0.8rem, 2vw, 1.05rem);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(244, 247, 244, 0.75);
+}
+
 .auction-status.is-ended .auction-dates-message,
-.auction-status.is-ended .auction-ended-message {
+.auction-status.is-ended .auction-ended-message,
+.auction-status.is-ended .auction-season-message {
   display: block;
 }
 
