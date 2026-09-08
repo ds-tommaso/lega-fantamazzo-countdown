@@ -647,27 +647,35 @@ body.curtain-open #curtain {
 }
 
 /* Stato "asta terminata" (AUCTION_END_DATE raggiunta): a differenza di
-   is-expired il blocco resta visibile, ma mostra solo ore/minuti (durata
-   finale, fissa) e l'augurio, nascondendo segno/secondi/millisecondi. */
+   is-expired il blocco resta visibile, ma mostra ore/minuti/secondi
+   (durata finale, fissa) e l'augurio, nascondendo solo segno e millisecondi. */
 .auction-status.is-ended .countdown-sign,
-.auction-status.is-ended .countdown-unit--seconds,
-.auction-status.is-ended .countdown-sep--seconds,
 .auction-status.is-ended .countdown-unit--ms,
 .auction-status.is-ended .countdown-sep--ms {
   display: none;
 }
 
+.auction-dates-message,
 .auction-ended-message {
   display: none;
   margin: 0.6rem 0 0;
   font-family: var(--font-body);
   font-weight: 600;
-  font-size: clamp(0.95rem, 2.6vw, 1.5rem);
   letter-spacing: 0.06em;
+}
+
+.auction-dates-message {
+  font-size: clamp(0.8rem, 2vw, 1.05rem);
+  color: rgba(244, 247, 244, 0.75);
+}
+
+.auction-ended-message {
+  font-size: clamp(0.95rem, 2.6vw, 1.5rem);
   color: var(--accent);
   text-shadow: 0 0 22px var(--accent-soft);
 }
 
+.auction-status.is-ended .auction-dates-message,
 .auction-status.is-ended .auction-ended-message {
   display: block;
 }

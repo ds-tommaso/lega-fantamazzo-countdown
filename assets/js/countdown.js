@@ -12,7 +12,8 @@
                  (e non è ancora stata raggiunta endTime, se nota):
                  timer positivo (segno verde) che conta il tempo trascorso
    - "ended"   → è nota AUCTION_END_DATE ed è stata raggiunta: mostra la
-                 durata finale (ore/minuti) e l'augurio di buon campionato
+                 durata finale (ore/minuti/secondi), le date di inizio/
+                 fine e l'augurio di buon campionato
    - "expired" → fallback quando AUCTION_END_DATE non è nota: oltre la
                  soglia AUCTION_VISIBLE_AFTER_START_MS il blocco sparisce
    ============================================================ */
@@ -46,6 +47,19 @@ function calculateAuctionState() {
  */
 function formatUnit(value, length = 2) {
   return String(value).padStart(length, "0");
+}
+
+/**
+ * Formatta un timestamp come data/ora locale "GG/MM HH:MM"
+ * (stessa ora locale con cui è interpretato EVENT_DATE in config.js).
+ */
+function formatDateTime(ms) {
+  const d = new Date(ms);
+  const day = formatUnit(d.getDate());
+  const month = formatUnit(d.getMonth() + 1);
+  const hours = formatUnit(d.getHours());
+  const minutes = formatUnit(d.getMinutes());
+  return `${day}/${month} ${hours}:${minutes}`;
 }
 
 /**
@@ -217,8 +231,8 @@ function handleEventExpired() {
 /**
  * Quando è nota AUCTION_END_DATE e viene raggiunta, l'asta risulta
  * "terminata": invece di sparire (come nello stato "expired"), il
- * blocco mostra la durata finale (ore/minuti, fissa: non conta più)
- * e un augurio di buon campionato per tutti.
+ * blocco mostra la durata finale (ore/minuti/secondi, fissa: non
+ * conta più), le date di inizio/fine e un augurio di buon campionato.
  */
 function handleEventEnded(durationMs) {
   if (eventEnded) return;
@@ -228,18 +242,24 @@ function handleEventEnded(durationMs) {
   dom.statusWrap.classList.add("is-ended");
   dom.countdownBlock.classList.remove("is-before", "is-live");
 
-  const { hours, minutes } = msToUnits(durationMs);
+  const { hours, minutes, seconds } = msToUnits(durationMs);
 
   dom.phase.textContent = "L'ASTA È TERMINATA";
   setUnitText(dom.hours, "hours", String(hours));
   setUnitText(dom.minutes, "minutes", formatUnit(minutes));
+  setUnitText(dom.seconds, "seconds", formatUnit(seconds));
+
+  const startLabel = formatDateTime(targetTime);
+  const endLabel = formatDateTime(endTime);
+  dom.datesMessage.textContent = `Dal ${startLabel} al ${endLabel}`;
 
   const message = "Buon campionato a tutti! 🏆";
   dom.endedMessage.textContent = message;
   dom.liveRegion.textContent =
-    `L'asta è terminata dopo ${hours} ore e ${minutes} minuti. ${message}`;
+    `L'asta è terminata dopo ${hours} ore, ${minutes} minuti e ${seconds} secondi, ` +
+    `dal ${startLabel} al ${endLabel}. ${message}`;
 
-  // Senza segno/secondi/ms la riga è ancora più corta: ricalcola la
-  // taglia su mobile (vedi handleEventStarted()).
+  // Senza segno/ms la riga è ancora più corta: ricalcola la taglia
+  // su mobile (vedi handleEventStarted()).
   fitCountdownRow();
 }

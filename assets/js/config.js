@@ -67,5 +67,6 @@ function cacheDom() {
   dom.statusWrap = document.getElementById("auction-status");
   dom.countdownBlock = document.getElementById("countdown-block");
   dom.liveRegion = document.getElementById("countdown-live");
+  dom.datesMessage = document.getElementById("auction-dates-message");
   dom.endedMessage = document.getElementById("auction-ended-message");
 }
